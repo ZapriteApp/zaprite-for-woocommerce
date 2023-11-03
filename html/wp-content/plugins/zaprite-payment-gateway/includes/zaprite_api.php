@@ -8,22 +8,18 @@ class API {
 
     protected $url;
     protected $api_key;
-    protected $wallet_id = "1234253";
-    protected $watch_only_wallet_id = "1234";
 
-    public function __construct($url, $api_key, $wallet_id, $watch_only_wallet_id) {
+    public function __construct($url, $api_key) {
         $this->url = rtrim($url,"/");
         $this->api_key = $api_key;
-        $this->wallet_id = $wallet_id;
-        $this->watch_only_wallet_id = $watch_only_wallet_id;
     }
 
     public function createCharge($amount, $memo, $order_id, $invoice_expiry_time = 1440) {
 
         // TODO need an api endpoint to look up the following data (currently its hardcoded)
-        //  - next order id number
-        //  - org id
-        //  - customer id
+        //  - next order id number (increment by 1?)
+        //  - org id (can probably lookup via api-key)
+        //  - customer id (do we even need a customer if this is handled in woocommerce?)
         //  - payment methods
 
         $c = new CurlWrapper();
@@ -31,7 +27,7 @@ class API {
         $randomNumber = mt_rand(10000, 99999); // Get random number for order id
         $amount = $amount * 100;
         error_log("ZAPRITE: amount in cents $amount");
-        $lineItemText = "WooCommerce order number $order_id";
+        $lineItemText = "WooCommerce order number $order_id"; // look at order label in zaprite
         $data = '{"0":{"json":{"daysToPay":30,"date":"2023-11-01","number":"'
             . "$randomNumber"
             . '","hideOrgAddress":false,"hideOrgEmail":false,"hideOrgName":false,"orgId":"clofxadld000333ngnzk0b3zm","customerId":"clofya4nz000833ngkd3dji4w","footerNote":null,"lineItems":[{"id":"tmp::'
@@ -48,7 +44,7 @@ class API {
         $completelink = $order->get_checkout_order_received_url();
         error_log("Zapite: Complete Link $completelink");
 
-        // 1. create invoice
+        // 1. create invoice (via url params instead of trpc quote)
         $response = $c->post('http://host.docker.internal:3000/api/trpc/invoice.upsert?batch=1', array(),  $data , $headers);
         error_log("Create invoice status ===>" . $response['status']);
 

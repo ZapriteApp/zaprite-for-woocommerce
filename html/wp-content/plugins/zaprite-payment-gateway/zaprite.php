@@ -23,9 +23,8 @@ function zaprite_server_init()
         return;
     };
 
-
     // Set the cURL timeout to 15 seconds. When requesting a lightning invoice
-    // If using a lnbits instance that is funded by a lnbits instance on Tor, a short timeout can result in failures.
+    // If using Tor, a short timeout can result in failures.
     add_filter('http_request_args', 'zaprite_server_http_request_args', 100, 1);
     function zaprite_server_http_request_args($r) //called on line 237
     {
@@ -34,7 +33,7 @@ function zaprite_server_init()
     }
 
     add_action('http_api_curl', 'zaprite_server_http_api_curl', 100, 1);
-    function zaprite_server_http_api_curl($handle) //called on line 1315
+    function zaprite_server_http_api_curl($handle)
     {
         curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 15);
         curl_setopt($handle, CURLOPT_TIMEOUT, 15);
@@ -49,14 +48,9 @@ function zaprite_server_init()
 
     add_filter('woocommerce_payment_gateways', 'add_zaprite_server_gateway');
 
-    /**
-     * Grab latest post title by an author!
-     */
     function zaprite_server_add_payment_complete_callback($data)
     {
-
         error_log("ZAPRITE: webhook zaprite_server_add_payment_complete_callback");
-
         $order_id = $data["id"];
         $order    = wc_get_order($order_id);
         $order->add_order_note('Payment is settled and has been credited to your Zaprite account. Purchased goods/services can be securely delivered to the customer.');
@@ -104,9 +98,7 @@ function zaprite_server_init()
 
             $url       = $this->get_option('zaprite_server_url');
             $api_key   = $this->get_option('zaprite_api_key');
-            $wallet_id   = $this->get_option('zaprite_wallet_id');
-            $watch_only_wallet_id   = $this->get_option('zaprite_watch_only_wallet_id');
-            $this->api = new API($url, $api_key, $wallet_id, $watch_only_wallet_id);
+            $this->api = new API($url, $api_key);
 
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(
                 $this,
@@ -133,7 +125,6 @@ function zaprite_server_init()
                 <?php $this->generate_settings_html(); ?>
             </table>
             <?php
-
         }
 
         /**
@@ -177,14 +168,11 @@ function zaprite_server_init()
          */
         public function thankyou()
         {
-
             error_log("thankyou called");
-
             if ($description = $this->get_description()) {
                 echo esc_html(wpautop(wptexturize($description)));
             }
         }
-
 
         /**
          * Called from checkout page, when "Place order" hit, through AJAX.
@@ -206,49 +194,42 @@ function zaprite_server_init()
             // Call Zaprite server to create invoice
             $r = $this->api->createCharge($amount, $memo, $order_id, $invoice_expiry_time);
 
-            // if ($r['status'] === 200) {
-            $resp = $r['response'];
-            $status = $r['status'];
-            error_log("CALLBACK===> $status");
-            // $order->add_meta_data('zaprite_server_verify', "https://getalby.com/lnurlp/dudesrug/verify/QeJpNn6NaAckjxrfcNMUnwsP", true);
-            // $order->add_meta_data('zaprite_server_invoice', "lnbc100n1pjnaljcpp5nxy87j6c8euugwsadh5pfga4g9dy7emrg0fq27mnsr9f6ua4xk0shp59jtcwcndfp9fr7xduwlqyzj8phhw7ckjp6ehkkvewzu2pr90z2cqcqzzsxqyz5vqsp557q94wqa7s3am842k475gaffumy66msk0v4ulan4saldcea76hqs9qyyssqdh74u2gvecnzdhg8wfr25sgg4x7xajz757vnp7y8j5dw4v7a6884g42dlhe9jnqqyhxq2chz7qy73989xmgcerqlunr375rzvm0ejmgpc4pm49", true);
-            // $order->save();
+            if ($r['status'] === 200) {
+                $resp = $r['response'];
+                $status = $r['status'];
+                error_log("ZAPRITE: process_payment status $status");
 
-                // $url          = sprintf("%s/satspay/%s",
-                //     rtrim($this->get_option('lnbits_satspay_server_url'), '/'),
-                //         $resp['id']
-                //     );
-                // $redirect_url = $url;
-            // Decode the JSON string into a PHP variable
-            //$decoded_response = json_decode($r, true);
+                // Access the orderId field
+                $order_id =  $r['response']['0']['result']['data']['json']['orderId'];
+                error_log("orderId => $order_id");
 
-            // Access the orderId field
+                // save zaprite metadata in woocommerce
+                $order->add_meta_data('zaprite_order_id', $order_id, true);
+                // $order->add_meta_data('zaprite_server_verify', "https://getalby.com/lnurlp/dudesrug/verify/QeJpNn6NaAckjxrfcNMUnwsP", true);
+                // $order->add_meta_data('zaprite_server_invoice', , true);
+                $order->save();
 
-            $order_id =  $r['response']['0']['result']['data']['json']['orderId'];
-            error_log("orderId => $order_id");
-            // save the zaprite orderid as metadata in the woocommerce system via metadata
-            $order->add_meta_data('zaprite_order_id', $order_id, true);
-            $callback = base64_encode($order->get_checkout_order_received_url());
-            $redirect_url = "http://localhost:3000/_domains/pay/order/$order_id?callback=$callback";
 
-            return array(
-                "result"   => "success",
-                "redirect" => $redirect_url
-            );
-            // } else {
-            //     error_log("LNbits API failure. Status=" . $r['status']);
-            //     error_log($r['response']);
+                $callback = base64_encode($order->get_checkout_order_received_url());
+                $redirect_url = "http://localhost:3000/_domains/pay/order/$order_id?callback=$callback";
 
-            //     return array(
-            //         "result"   => "failure",
-            //         "messages" => array("Failed to create LNbits invoice.")
-            //     );
-            // }
+                return array(
+                    "result"   => "success",
+                    "redirect" => $redirect_url
+                );
+            } else {
+                error_log("ZAPRITE: API failure. Status=" . $r['status']);
+                error_log($r['response']);
+                return array(
+                    "result"   => "failure",
+                    "messages" => array("Failed to create Zaprite invoice.")
+                );
+            }
         }
 
 
         /**
-         * Checks whether given invoice was paid, using LNbits API,
+         * Checks whether given invoice was paid, using Zaprite public API,
          * and updates order metadata in the database.
          */
         public function check_payment()
@@ -256,17 +237,18 @@ function zaprite_server_init()
             error_log("ZAPRITE: check_payment");
             $order_id = wc_get_order_id_by_order_key($_REQUEST['key']);
             $order = wc_get_order($order_id);
-            $order->add_order_note('Payment is settled and has been credited to your LNbits account. The order can be securely delivered to the customer.');
+            $order->add_order_note('Payment is settled and has been credited to your Zaprite account. The order can be securely delivered to the customer.');
             $order->payment_complete();
             $order->save();
             error_log("ZAPRITE: PAID");
 
-            // $lnbits_payment_id = $order->get_meta('lnbits_satspay_server_payment_id');
-            // $r            = $this->api->checkChargePaid($lnbits_payment_id);
+            // TODO need api/public/woocommerce/verify endpoint
+            // $zaprite_payment_id = $order->get_meta('zaprite_server_payment_id');
+            // $r            = $this->api->checkChargePaid($zaprite_payment_id);
 
             //if ($r['status'] == 200) {
                 // if ($r['response']['paid'] == true) {
-                    // $order->add_order_note('Payment is settled and has been credited to your LNbits account. The order can be securely delivered to the customer.');
+                    // $order->add_order_note('Payment is settled and has been credited to your Zaprite account. The order can be securely delivered to the customer.');
                     // $order->payment_complete();
                     // $order->save();
                     // error_log("PAID");
