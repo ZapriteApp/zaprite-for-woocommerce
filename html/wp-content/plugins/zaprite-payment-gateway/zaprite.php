@@ -19,6 +19,7 @@ use ZapritePlugin\API;
 // This is the entry point of the plugin, where everything is registered/hooked up into WordPress.
 function zaprite_server_init()
 {
+
     if ( ! class_exists('WC_Payment_Gateway')) {
         return;
     };
@@ -71,7 +72,7 @@ function zaprite_server_init()
 
     add_action("rest_api_init", function () {
         error_log("ZAPRITE: rest_api_init zaprite");
-        register_rest_route("zaprite_server/zaprite/v1", "/payment_complete/(?P<id>\d+)", array(
+        register_rest_route("zaprite_server/zaprite/v2", "/payment_complete/(?P<id>\d+)", array(
             "methods"  => "GET",
             "callback" => "zaprite_server_add_payment_complete_callback",
             "permission_callback" => "__return_true",
@@ -181,6 +182,8 @@ function zaprite_server_init()
          */
         public function process_payment($order_id)
         {
+            $zaprite_url = "http://localhost:3000";
+
             error_log("ZAPRITE: process_payment");
             $order = wc_get_order($order_id);
 
@@ -205,13 +208,15 @@ function zaprite_server_init()
 
                 // save zaprite metadata in woocommerce
                 $order->add_meta_data('zaprite_order_id', $order_id, true);
+                $order->add_meta_data('zaprite_order_link', "$zaprite_url/_domains/pay/order/$order_id", true);
+
                 // $order->add_meta_data('zaprite_server_verify', "https://getalby.com/lnurlp/dudesrug/verify/QeJpNn6NaAckjxrfcNMUnwsP", true);
                 // $order->add_meta_data('zaprite_server_invoice', , true);
                 $order->save();
 
 
                 $callback = base64_encode($order->get_checkout_order_received_url());
-                $redirect_url = "http://localhost:3000/_domains/pay/order/$order_id?callback=$callback";
+                $redirect_url = "$zaprite_url/_domains/pay/order/$order_id?callback=$callback";
 
                 return array(
                     "result"   => "success",
@@ -257,6 +262,14 @@ function zaprite_server_init()
                 // TODO: handle non 200 response status
             // }
             die();
+        }
+
+        function set_order_status_pending( $order_id ) {
+            $order = wc_get_order( $order_id );
+            if ( $order instanceof WC_Order ) {
+                $order->update_status( 'pending', 'Order status updated to pending by Zaprite.' );
+                $order->save();
+            }
         }
 
     }

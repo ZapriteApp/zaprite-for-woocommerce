@@ -8,6 +8,7 @@ class API {
 
     protected $url;
     protected $api_key;
+    protected $zaprite_url = "http://host.docker.internal:3000";
 
     public function __construct($url, $api_key) {
         $this->url = rtrim($url,"/");
@@ -16,9 +17,11 @@ class API {
 
     public function createCharge($amount, $memo, $order_id, $invoice_expiry_time = 1440) {
 
+        error_log("ZAPRITE: URL $this->zaprite_url");
+
         // TODO need an api endpoint to look up the following data (currently its hardcoded)
         //  - next order id number (increment by 1?)
-        //  - org id (can probably lookup via api-key)
+        //  - org id (can probably lookup vias api-key)
         //  - customer id (do we even need a customer if this is handled in woocommerce?)
         //  - payment methods
 
@@ -45,14 +48,14 @@ class API {
         error_log("Zapite: Complete Link $completelink");
 
         // 1. create invoice (via url params instead of trpc quote)
-        $response = $c->post('http://host.docker.internal:3000/api/trpc/invoice.upsert?batch=1', array(),  $data , $headers);
+        $response = $c->post("$this->zaprite_url/api/trpc/invoice.upsert?batch=1", array(),  $data , $headers);
         error_log("Create invoice status ===>" . $response['status']);
 
         // 2. send invoice
         $order_id =  $response ['response']['0']['result']['data']['json']['orderId'];
         $org_id = "clofxadld000333ngnzk0b3zm";
         $data_send = '{"0":{"json":{"orderId":"' . $order_id . '","orgId":"' . "clofxadld000333ngnzk0b3zm" . '"}}}';
-        $response2 = $c->post('http://host.docker.internal:3000/api/trpc/invoice.send?batch=1', array(),  $data_send , $headers);
+        $response2 = $c->post("$this->zaprite_url/api/trpc/invoice.send?batch=1", array(),  $data_send , $headers);
         error_log("Send invoice status ===>" . $response2['status'] );
         return $response;
     }
