@@ -8,7 +8,7 @@ class API {
 
     protected $url;
     protected $api_key;
-    protected $zaprite_url = "http://host.docker.internal:3000";
+    protected $zaprite_url = "http://host.docker.internal:3000"; // "https://zaprite.com"
 
     public function __construct($url, $api_key) {
         $this->url = rtrim($url,"/");
@@ -29,17 +29,11 @@ class API {
 
         $completelink = $order->get_checkout_order_received_url();
         $key = $order->get_order_key();
+        $site_url = site_url();
 
         error_log("Zapite: Complete Link $completelink");
 
-        $orderPaidCallback = "http://localhost:8000/wp-json/zaprite_server/zaprite/v2/payment_complete/$order_id/?key=$key";
-        // $data_send =
-        // '{"apiKey": "'. "$this->api_key"
-        //     .'", "amount": ' . $amount
-        //     . ', "currency": "USD", "orderPaidCallback": "' . " $orderPaidCallback" . '"'
-        //     . ', "redirectUrl": "'. "$completelink" .'" '
-        //     . ', "externalOrderId": "'. "$order_id" .'" '
-        // . '}';
+        $orderPaidCallback = "$site_url/wp-json/zaprite_server/zaprite/v2/payment_complete/$order_id/?key=$key";
         $data = [
             "apiKey" => $this->api_key,
             "amount" => $amount,

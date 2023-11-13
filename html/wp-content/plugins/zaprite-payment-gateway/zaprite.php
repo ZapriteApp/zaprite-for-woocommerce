@@ -173,7 +173,7 @@ function zaprite_server_init()
                 ),
                 'zaprite_api_key'           => array(
                     'title'       => __('Api Key', 'woocommerce'),
-                    'description' => __('Enter your api key', 'woocommerce'),
+                    'description' => __('Enter your Zaprite api key', 'woocommerce'),
                     'type'        => 'text',
                     'default'     => '',
                 )
@@ -199,7 +199,7 @@ function zaprite_server_init()
          */
         public function process_payment($order_id)
         {
-            $zaprite_url = "http://localhost:3000";
+            $zaprite_url = "http://localhost:3000"; // "https://zaprite.com"
 
             error_log("ZAPRITE: process_payment");
             $order = wc_get_order($order_id);
