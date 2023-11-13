@@ -1,36 +1,21 @@
-Install
-=====
+Zaprite Extension for Woo
+=========================
 
-https://developer.woocommerce.com/extension-developer-guide/creating-your-first-extension/
+**Accept Bitcoin and Lightning**
 
-1. install the wp-cli on your local machine
-```
-brew install php
-curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-php wp-cli.phar --info
-```
+Start accepting Bitcoin and Lightning today. Powered by Zaprite
 
-2. run this code
-```
-make start
-```
+This plugin allows stores that use Wordpress WooCommerce shopping cart system to accept Bitcoin and Bitcoin through Lightning Network via Zaprite.
 
-3. install woocommerce plugin
-```
-docker exec -it woocommerce-wordpress-1 /bin/bash
-curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-php wp-cli.phar --info
-chmod +x wp-cli.phar
-mv wp-cli.phar /usr/local/bin/wp
-wp core install --allow-root --url="http://localhost:8000" --title="WooSite" --admin_user="admin" --admin_email="ntheile@gmail.com" --admin_password="password"
-wp plugin install woocommerce --activate --allow-root
+*In order to use this plugin you have to create an account on [https://zaprite.com](https://zaprite.com)*
 
-wp user list --allow-root
-wp user update admin --user_pass=password --allow-root
+## Installation
 
-```
+1.
+2.
+3.
+4.
 
-4. open http://localhost:8000/wp-admin
-
-
-5. https://developer.woocommerce.com/extension-developer-guide/creating-your-first-extension/
+## TODO
+- [] consider the plain permalink url schema
+- [] github action to zip up the `html/wp-content/plugins/zaprite-payment-gateway` for deployment to the Woo extension store

@@ -7,6 +7,6 @@ install-woo:
 # php wp-cli.phar --info
 # chmod +x wp-cli.phar
 # mv wp-cli.phar /usr/local/bin/wp
-# wp core install --allow-root --url="http://localhost:8000" --title="WooSite" --admin_user="admin" --admin_email="ntheile@gmail.com"
+# wp core install --allow-root --url="http://localhost:8000" --title="WooSite" --admin_user="admin" --admin_email="email@email.com"
 # wp plugin install woocommerce --activate --allow-root
 
