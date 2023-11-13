@@ -2,14 +2,20 @@
 
 /*
 Plugin Name: Zaprite - Bitcoin Onchain and Lightning Payment Gateway
-Plugin URI: https://github.com/zaprite
+Plugin URI: https://github.com/ZapriteApp/zaprite-for-woocommerce
 Description: Accept Bitcoin from your Woo store both on-chain and with Lightning with Zaprite
-Version: 0.0.1
+Version: 1.0.0
 Author: Zaprite
-Author URI: https://github.com/zaprite
+Author URI: https://zaprite.com
 */
 
 add_action('plugins_loaded', 'zaprite_server_init');
+
+define('ZAPRITE_ENV', 'dev'); // change this to 'prod' for production
+define('ZAPRITE_WOOCOMMERCE_VERSION', '1.0.0');
+define('ZAPRITE_PATH', 'https://zaprite.com');
+define('ZAPRITE_DEV_PATH', 'http://localhost:3000');
+define('ZAPRITE_DOCKER_PATH', 'http://host.docker.internal:3000');
 
 require_once(__DIR__ . '/includes/init.php');
 
@@ -199,7 +205,7 @@ function zaprite_server_init()
          */
         public function process_payment($order_id)
         {
-            $zaprite_url = "http://localhost:3000"; // "https://zaprite.com"
+            $zaprite_url =  (ZAPRITE_ENV == 'dev') ? ZAPRITE_DEV_PATH : ZAPRITE_PATH;
 
             error_log("ZAPRITE: process_payment");
             $order = wc_get_order($order_id);

@@ -8,7 +8,7 @@ class API {
 
     protected $url;
     protected $api_key;
-    protected $zaprite_url = "http://host.docker.internal:3000"; // "https://zaprite.com"
+    protected $zaprite_url = (ZAPRITE_ENV == 'dev') ? ZAPRITE_DOCKER_PATH : ZAPRITE_PATH;
 
     public function __construct($url, $api_key) {
         $this->url = rtrim($url,"/");
