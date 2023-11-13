@@ -3,7 +3,7 @@
 /*
 Plugin Name: Zaprite - Bitcoin Onchain and Lightning Payment Gateway
 Plugin URI: https://github.com/zaprite
-Description: Accept Bitcoin on your WooCommerce store both on-chain and with Lightning with Zaprite
+Description: Accept Bitcoin from your Woo store both on-chain and with Lightning with Zaprite
 Version: 0.0.1
 Author: Zaprite
 Author URI: https://github.com/zaprite
@@ -46,7 +46,6 @@ function zaprite_server_init()
         $methods[] = 'WC_Gateway_Zaprite_Server';
         return $methods;
     }
-
     add_filter('woocommerce_payment_gateways', 'add_zaprite_server_gateway');
 
     function zaprite_server_add_payment_complete_callback($data)
@@ -54,19 +53,30 @@ function zaprite_server_init()
         error_log("ZAPRITE: webhook zaprite_server_add_payment_complete_callback");
         $order_id = $data["id"];
         $order    = wc_get_order($order_id);
-        $order->add_order_note('Payment is settled and has been credited to your Zaprite account. Purchased goods/services can be securely delivered to the customer.');
-        // $payment_hash = $order->get_meta('zaprite_server_payment_hash');
-        $order->payment_complete();
-        $order->save();
-        error_log("PAID");
-        echo(json_encode(array(
-            'result'   => 'success',
-            'redirect' => $order->get_checkout_order_received_url(),
-            'paid'     => true
-        )));
+        $keyToCheck = $data->get_param('key');
+        error_log("ZAPRITE: keyToCheck $keyToCheck");
+        $key = $order->get_order_key();
+        error_log("ZAPRITE: correct key $key");
 
-        if (empty($order_id)) {
-            return null;
+        if ($key == $keyToCheck) {
+            $order->add_order_note('Payment is settled and has been credited to your Zaprite account. Purchased goods/services can be securely delivered to the customer.');
+            $order->payment_complete();
+            $order->save();
+            error_log("PAID");
+            echo(json_encode(array(
+                'result'   => 'success',
+                'redirect' => $order->get_checkout_order_received_url(),
+                'paid'     => true
+            )));
+            if (empty($order_id)) {
+                return null;
+            }
+        } else {
+            return new WP_Error(
+                'unauthorized_access',
+                'Unauthorized access - keys do not match',
+                array( 'status' => 401 )
+            );
         }
     }
 
@@ -86,7 +96,7 @@ function zaprite_server_init()
             global $woocommerce;
 
             $this->id                 = 'zaprite';
-            $this->icon               = plugin_dir_url(__FILE__) . 'assets/lightning.png';
+            $this->icon = $this->get_option('payment_image');
             $this->has_fields         = false;
             $this->method_title       = 'Zaprite';
             $this->method_description = 'Take payments in Bitcoin Onchain and with Lightning using Zaprite.';
@@ -99,6 +109,7 @@ function zaprite_server_init()
 
             $url       = $this->get_option('zaprite_server_url');
             $api_key   = $this->get_option('zaprite_api_key');
+
             $this->api = new API($url, $api_key);
 
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(
@@ -146,13 +157,19 @@ function zaprite_server_init()
                     'title'       => __('Title', 'woocommerce'),
                     'type'        => 'text',
                     'description' => __('The payment method title which a customer sees at the checkout of your store.', 'woocommerce'),
-                    'default'     => __('Pay with Bitcoin', 'woocommerce'),
+                    'default'     => __('Pay with Bitcoin: on-chain or with Lightning', 'woocommerce'),
                 ),
                 'description'                         => array(
                     'title'       => __('Description', 'woocommerce'),
                     'type'        => 'textarea',
                     'description' => __('The payment method description which a customer sees at the checkout of your store.', 'woocommerce'),
-                    'default'     => __('Use any Bitcoin wallet to pay. Powered by Zaprite.'),
+                    'default'     => __('Powered by Zaprite.'),
+                ),
+                'payment_image'                         => array(
+                    'title'       => __('Image', 'woocommerce'),
+                    'type'        => 'text',
+                    'description' => __('The url of an image displayed by the payment method', 'woocommerce'),
+                    'default'     => __('https://app.zaprite.com/_next/image?url=%2Ffavicon.png&w=48&q=75'),
                 ),
                 'zaprite_api_key'           => array(
                     'title'       => __('Api Key', 'woocommerce'),
@@ -192,10 +209,12 @@ function zaprite_server_init()
 
             // $amount = Utils::convert_to_satoshis($order->get_total(), get_woocommerce_currency());
             $amount =$order->get_total();
+            $currency = $order->get_currency();
+            error_log("ZAPRITE: currency $amount $currency");
 
             $invoice_expiry_time = 1440; //$this->get_option('lnbits_satspay_expiry_time');
             // Call Zaprite server to create invoice
-            $r = $this->api->createCharge($amount, $memo, $order_id, $invoice_expiry_time);
+            $r = $this->api->createCharge($amount, $currency, $memo, $order_id, $invoice_expiry_time);
 
             if ($r['status'] === 200) {
                 $resp = $r['response'];
@@ -203,20 +222,15 @@ function zaprite_server_init()
                 error_log("ZAPRITE: process_payment status $status");
 
                 // Access the orderId field
-                $order_id =  $r['response']['0']['result']['data']['json']['orderId'];
+                $order_id =  $r['response']['id'];
                 error_log("orderId => $order_id");
 
                 // save zaprite metadata in woocommerce
                 $order->add_meta_data('zaprite_order_id', $order_id, true);
                 $order->add_meta_data('zaprite_order_link', "$zaprite_url/_domains/pay/order/$order_id", true);
-
-                // $order->add_meta_data('zaprite_server_verify', "https://getalby.com/lnurlp/dudesrug/verify/QeJpNn6NaAckjxrfcNMUnwsP", true);
-                // $order->add_meta_data('zaprite_server_invoice', , true);
                 $order->save();
-
-
                 $callback = base64_encode($order->get_checkout_order_received_url());
-                $redirect_url = "$zaprite_url/_domains/pay/order/$order_id?callback=$callback";
+                $redirect_url = "$zaprite_url/_domains/pay/order/$order_id";
 
                 return array(
                     "result"   => "success",
@@ -224,44 +238,11 @@ function zaprite_server_init()
                 );
             } else {
                 error_log("ZAPRITE: API failure. Status=" . $r['status']);
-                error_log($r['response']);
                 return array(
                     "result"   => "failure",
                     "messages" => array("Failed to create Zaprite invoice.")
                 );
             }
-        }
-
-
-        /**
-         * Checks whether given invoice was paid, using Zaprite public API,
-         * and updates order metadata in the database.
-         */
-        public function check_payment()
-        {
-            error_log("ZAPRITE: check_payment");
-            $order_id = wc_get_order_id_by_order_key($_REQUEST['key']);
-            $order = wc_get_order($order_id);
-            $order->add_order_note('Payment is settled and has been credited to your Zaprite account. The order can be securely delivered to the customer.');
-            $order->payment_complete();
-            $order->save();
-            error_log("ZAPRITE: PAID");
-
-            // TODO need api/public/woocommerce/verify endpoint
-            // $zaprite_payment_id = $order->get_meta('zaprite_server_payment_id');
-            // $r            = $this->api->checkChargePaid($zaprite_payment_id);
-
-            //if ($r['status'] == 200) {
-                // if ($r['response']['paid'] == true) {
-                    // $order->add_order_note('Payment is settled and has been credited to your Zaprite account. The order can be securely delivered to the customer.');
-                    // $order->payment_complete();
-                    // $order->save();
-                    // error_log("PAID");
-                //}
-            // } else {
-                // TODO: handle non 200 response status
-            // }
-            die();
         }
 
         function set_order_status_pending( $order_id ) {
