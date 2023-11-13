@@ -11,11 +11,6 @@ This plugin allows stores that use Wordpress WooCommerce shopping cart system to
 
 ## Installation
 
-1.
-2.
-3.
-4.
-
 ## TODO
 - [] consider the plain permalink url schema
 - [] github action to zip up the `html/wp-content/plugins/zaprite-payment-gateway` for deployment to the Woo extension store
