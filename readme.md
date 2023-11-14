@@ -24,14 +24,15 @@ To develop locally
 2. Create a wordpress site and install the Woocommerce plugin
 3. Goto settings > permalinks > Permalink structure	> (make sure this is set to 'Day and name')
 4. Before cloning this repo we want to make sure you are in the working directory for the workpress plugins.
-To get the directory goto "local by Flywheel" and click "Go to site folder" at the top. The plugin directory should be at `app/public/wp-content/plugins`. Open a terminal and change into this path.
-5. Then run `git clone https://github.com/ZapriteApp/zaprite-for-woocommerce.git`
-6. In the file `zaprite-for-woocommerce/zaprite.php` edit this code at the top with your settings
+To get the directory goto "Local by Flywheel" and click "Open in shell" at the top. The plugin directory should be at `app/public/wp-content/plugins`.
+5. `cd wp-content/plugins``
+6. Then run `git clone https://github.com/ZapriteApp/zaprite-for-woocommerce.git`
+7. In the file `zaprite-for-woocommerce/zaprite.php` edit this code at the top with your settings
 ```
 define('ZAPRITE_ENV', 'dev');
 define('ZAPRITE_DEV_PATH', 'http://yoursite.local');
 define('ZAPRITE_DOCKER_PATH', 'http://yoursite.local');
 ```
-7. In wordpress admin dashboard `http://yoursite.local/wp-admin` goto plugin > installed plugins > make sure Zaprite is activated
-8. goto woocommerce > settings > Payments > enable and configure Zaprite
-9. Make sure to get Zaprite api key from http://localhost:3000/org/{YOUR_ORG_ID}/connections/woo
+8. In wordpress admin dashboard `http://yoursite.local/wp-admin` goto plugin > installed plugins > make sure Zaprite is activated
+9. goto woocommerce > settings > Payments > enable and configure Zaprite
+10. Make sure to get Zaprite api key from http://localhost:3000/org/{YOUR_ORG_ID}/connections/woo
