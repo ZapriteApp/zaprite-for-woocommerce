@@ -17,20 +17,27 @@ jobs:
       run: sudo apt-get install zip
 
     - name: Zip the folder
-      run: zip -r zaprite-payment-gateway.zip html/wp-content/plugins/zaprite-payment-gateway
+      run: |
+        cd html/wp-content/plugins
+        zip -r zaprite-payment-gateway.zip zaprite-payment-gateway
 
-    - name: Get the version
-      id: get_version
-      run: echo "VERSION=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+    - name: Bump version and push tag
+      id: tag_version
+      uses: mathieudutour/github-tag-action@v5.6
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        default_bump: patch
+        release_branches: main
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Create Release
-      id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ env.VERSION }}
-        release_name: Release ${{ env.VERSION }}
+        tag_name: ${{ steps.tag_version.outputs.new_tag }}
+        release_name: Release ${{ steps.tag_version.outputs.new_tag }}
         draft: false
         prerelease: false
 
