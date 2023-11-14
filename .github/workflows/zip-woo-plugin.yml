@@ -46,6 +46,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./html/wp-content/plugins/zaprite-payment-gateway.zip
+          asset_path: ./zaprite-payment-gateway.zip
           asset_name: zaprite-payment-gateway.zip
           asset_content_type: application/zip
