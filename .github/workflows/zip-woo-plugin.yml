@@ -1,4 +1,4 @@
-name: Zip Woo Plugin and Upload to Release
+name: Release Workflow
 
 on:
   push:
@@ -6,47 +6,46 @@ on:
       - main
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Install zip
-      run: sudo apt-get install zip
+      - name: Install zip
+        run: sudo apt-get install zip
 
-    - name: Zip the folder
-      run: |
-        cd html/wp-content/plugins
-        zip -r zaprite-payment-gateway.zip zaprite-payment-gateway
+      - name: Zip the folder
+        run: |
+          cd html/wp-content/plugins
+          zip -r zaprite-payment-gateway.zip zaprite-payment-gateway
 
-    - name: Bump version and push tag
-      id: tag_version
-      uses: mathieudutour/github-tag-action@v5.6
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        default_bump: patch
-        release_branches: main
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v5.6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: patch
+          release_branches: main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Create Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ steps.tag_version.outputs.new_tag }}
-        release_name: Release ${{ steps.tag_version.outputs.new_tag }}
-        draft: false
-        prerelease: false
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag_version.outputs.new_tag }}
+          release_name: Release ${{ steps.tag_version.outputs.new_tag }}
+          draft: false
+          prerelease: false
 
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./zaprite-payment-gateway.zip
-        asset_name: zaprite-payment-gateway.zip
-        asset_content_type: application/zip
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./html/wp-content/plugins/zaprite-payment-gateway.zip
+          asset_name: zaprite-payment-gateway.zip
+          asset_content_type: application/zip
