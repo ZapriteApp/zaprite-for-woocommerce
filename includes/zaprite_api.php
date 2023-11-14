@@ -8,7 +8,7 @@ class API {
 
     protected $url;
     protected $api_key;
-    protected $zaprite_url = (ZAPRITE_ENV == 'dev') ? ZAPRITE_DOCKER_PATH : ZAPRITE_PATH;
+    protected $zaprite_url = (ZAPRITE_ENV == 'dev') ? ZAPRITE_DEV_PATH : ZAPRITE_PATH;
 
     public function __construct($url, $api_key) {
         $this->url = rtrim($url,"/");

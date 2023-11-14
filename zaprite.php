@@ -11,11 +11,10 @@ Author URI: https://zaprite.com
 
 add_action('plugins_loaded', 'zaprite_server_init');
 
-define('ZAPRITE_ENV', 'dev'); // change this to 'prod' for production, or 'dev' for development
+define('ZAPRITE_ENV', 'prod'); // change this to 'prod' for production, or 'dev' for development
 define('ZAPRITE_WOOCOMMERCE_VERSION', '1.0.0');
 define('ZAPRITE_PATH', 'https://zaprite.com' ); // 'https://zaprite-v2-1mpth5l9h-zaprite.vercel.app'
-define('ZAPRITE_DEV_PATH', 'http://wootest.local');
-define('ZAPRITE_DOCKER_PATH', 'http://wootest.local');
+define('ZAPRITE_DEV_PATH', 'http://localhost:3000');
 
 require_once(__DIR__ . '/includes/init.php');
 

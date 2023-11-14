@@ -27,12 +27,14 @@ To develop locally
 To get the directory goto "Local by Flywheel" and click "Open in shell" at the top. The plugin directory should be at `app/public/wp-content/plugins`.
 5. `cd wp-content/plugins``
 6. Then run `git clone https://github.com/ZapriteApp/zaprite-for-woocommerce.git`
-7. In the file `zaprite-for-woocommerce/zaprite.php` edit this code at the top with your settings
+7. In the file `zaprite.php` edit this code at the top with your settings
 ```
 define('ZAPRITE_ENV', 'dev');
-define('ZAPRITE_DEV_PATH', 'http://yoursite.local');
-define('ZAPRITE_DOCKER_PATH', 'http://yoursite.local');
+define('ZAPRITE_DEV_PATH', 'http://localhost:3000');
 ```
 8. In wordpress admin dashboard `http://yoursite.local/wp-admin` goto plugin > installed plugins > make sure Zaprite is activated
 9. goto woocommerce > settings > Payments > enable and configure Zaprite
 10. Make sure to get Zaprite api key from http://localhost:3000/org/{YOUR_ORG_ID}/connections/woo
+11. To turn on debugging Edit the `wp-config.php` File. Look for the line that says `define('WP_DEBUG', false);`. If it's not there, you'll need to add it. And change it to true.
+12. Then restart your site. This should create a debug.log file in `wp-content`
+13. Now you can test the plugin by creating an order in your shop.
