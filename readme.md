@@ -25,7 +25,7 @@ To develop locally
 3. Goto settings > permalinks > Permalink structure	> (make sure this is set to 'Day and name')
 4. Before cloning this repo we want to make sure you are in the working directory for the workpress plugins.
 To get the directory goto "Local by Flywheel" and click "Open in shell" at the top. The plugin directory should be at `app/public/wp-content/plugins`.
-5. `cd wp-content/plugins``
+5. `cd wp-content/plugins`
 6. Then run `git clone https://github.com/ZapriteApp/zaprite-for-woocommerce.git`
 7. In the file `zaprite.php` edit this code at the top with your settings
 ```
