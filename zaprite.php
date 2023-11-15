@@ -11,7 +11,7 @@ Author URI: https://zaprite.com
 
 add_action('plugins_loaded', 'zaprite_server_init');
 
-define('ZAPRITE_ENV', 'prod'); // change this to 'prod' for production, or 'dev' for development
+define('ZAPRITE_ENV', 'dev'); // change this to 'prod' for production, or 'dev' for development
 define('ZAPRITE_WOOCOMMERCE_VERSION', '1.0.0');
 define('ZAPRITE_PATH', 'https://zaprite.com' ); // 'https://zaprite-v2-1mpth5l9h-zaprite.vercel.app'
 define('ZAPRITE_DEV_PATH', 'http://localhost:3000');
@@ -212,14 +212,14 @@ function zaprite_server_init()
             // This will be stored in the invoice (ie. can be used to match orders in Zaprite)
             $memo = get_bloginfo('name') . " Order #" . $order->get_id() . " Total=" . $order->get_total() . get_woocommerce_currency();
 
-            // $amount = Utils::convert_to_satoshis($order->get_total(), get_woocommerce_currency());
             $amount =$order->get_total();
             $currency = $order->get_currency();
-            error_log("ZAPRITE: currency $amount $currency");
+            // error_log(print_r($order, true));
+            $total_in_smallest_unit = Utils::convert_to_smallest_unit($amount);
+            error_log("ZAPRITE: currency in smallest unit $total_in_smallest_unit $currency , decimals: $decimals");
 
-            $invoice_expiry_time = 1440; //$this->get_option('lnbits_satspay_expiry_time');
-            // Call Zaprite server to create invoice
-            $r = $this->api->createCharge($amount, $currency, $memo, $order_id, $invoice_expiry_time);
+            // Call the Zaprite public api to create the invoice
+            $r = $this->api->createCharge($total_in_smallest_unit, $currency, $memo, $order_id);
 
             if ($r['status'] === 200) {
                 $resp = $r['response'];

@@ -22,6 +22,12 @@ class Utils {
             return intval($amount * 100000000);
         }
     }
+    public static function convert_to_smallest_unit($amount) {
+        // Get the number of decimals for pricing from WooCommerce settings
+        $decimals = get_option('woocommerce_price_num_decimals');
+        // Convert the total to the smallest unit
+        return $amount * pow(10, $decimals);
+    }
 }
 
 class CurlWrapper {

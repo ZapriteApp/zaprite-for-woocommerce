@@ -15,14 +15,13 @@ class API {
         $this->api_key = $api_key;
     }
 
-    public function createCharge($amount, $currency, $memo, $order_id, $invoice_expiry_time = 1440) {
+    public function createCharge($amount, $currency, $memo, $order_id) {
 
         error_log("ZAPRITE: URL $this->zaprite_url");
 
         $c = new CurlWrapper();
         $order = wc_get_order($order_id);
-        $amount = $amount * 100;
-        error_log("ZAPRITE: amount in cents $amount");
+        error_log("ZAPRITE: amount in smallest unit $amount $currency");
         $headers = array(
             'Content-Type' => 'application/json'
         );
