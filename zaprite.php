@@ -53,10 +53,19 @@ function zaprite_server_init()
     }
     add_filter('woocommerce_payment_gateways', 'add_zaprite_server_gateway');
 
-    function zaprite_server_add_payment_complete_callback($data)
+    function zaprite_server_add_update_status_callback($data)
     {
-        error_log("ZAPRITE: webhook zaprite_server_add_payment_complete_callback");
+        error_log("ZAPRITE: webhook zaprite_server_add_update_status_callback");
         $order_id = $data["id"];
+        if (empty($order_id)) {
+            return new WP_Error(
+                'server_error',
+                'Missing order id',
+                array( 'status' => 500 )
+            );
+        }
+        $status = $data->get_param('status'); // processing (aka paid), underpaid, overpaid or btc-pending
+        error_log("ZAPRITE: order status update - $status");
         $order    = wc_get_order($order_id);
         $keyToCheck = $data->get_param('key');
         error_log("ZAPRITE: keyToCheck $keyToCheck");
@@ -64,18 +73,29 @@ function zaprite_server_init()
         error_log("ZAPRITE: correct key $key");
 
         if ($key == $keyToCheck) {
-            $order->add_order_note('Payment is settled and has been credited to your Zaprite account. Purchased goods/services can be securely delivered to the customer.');
-            $order->payment_complete();
-            $order->save();
-            error_log("PAID");
-            echo(json_encode(array(
-                'result'   => 'success',
-                'redirect' => $order->get_checkout_order_received_url(),
-                'paid'     => true
-            )));
-            if (empty($order_id)) {
-                return null;
+            $wooStatus = Utils::convert_order_status($status);
+            error_log("ZAPRITE: wooStatus - $wooStatus");
+            if ($wooStatus == "") {
+                return new WP_REST_Response('Invalid order status.', 400);
             }
+            if($wooStatus == "processing") {
+                $order->add_order_note('Payment is settled.');
+                $order->payment_complete();
+                $order->save();
+                error_log("PAID");
+                echo(json_encode(array(
+                    'result'   => 'success',
+                    'redirect' => $order->get_checkout_order_received_url(),
+                    'paid'     => true
+                )));
+            } else if ($wooStatus == "pending") {
+                // do nothing
+            } else {
+                $order->update_status($wooStatus, 'Order status updated via API.', true);
+                $order->save();
+                error_log("ZAPRITE: update status - $wooStatus");
+            }
+            return new WP_REST_Response('Order status updated.', 200);
         } else {
             return new WP_Error(
                 'unauthorized_access',
@@ -87,12 +107,57 @@ function zaprite_server_init()
 
     add_action("rest_api_init", function () {
         error_log("ZAPRITE: rest_api_init zaprite");
-        register_rest_route("zaprite_server/zaprite/v2", "/payment_complete/(?P<id>\d+)", array(
+        register_rest_route("zaprite_server/zaprite/v1", "/update_status/(?P<id>\d+)", array(
             "methods"  => "GET",
-            "callback" => "zaprite_server_add_payment_complete_callback",
+            "callback" => "zaprite_server_add_update_status_callback",
             "permission_callback" => "__return_true",
         ));
     });
+
+    function add_custom_order_status() {
+        register_post_status('wc-underpaid', array(
+            'label'                     => 'Underpaid',
+            'public'                    => true,
+            'exclude_from_search'       => false,
+            'show_in_admin_all_list'    => true,
+            'show_in_admin_status_list' => true,
+            'label_count'               => _n_noop('Underpaid (%s)', 'Underpaid (%s)')
+        ));
+        register_post_status('wc-overpaid', array(
+            'label'                     => 'Overpaid',
+            'public'                    => true,
+            'exclude_from_search'       => false,
+            'show_in_admin_all_list'    => true,
+            'show_in_admin_status_list' => true,
+            'label_count'               => _n_noop('Overpaid (%s)', 'Overpaid (%s)')
+        ));
+        register_post_status('wc-btc-pending', array(
+            'label'                     => 'BTC Pending',
+            'public'                    => true,
+            'exclude_from_search'       => false,
+            'show_in_admin_all_list'    => true,
+            'show_in_admin_status_list' => true,
+            'label_count'               => _n_noop('BTC Pending (%s)', 'BTC Pending (%s)')
+        ));
+    }
+    add_action('init', 'add_custom_order_status');
+    function add_custom_order_statuses($order_statuses) {
+        $new_order_statuses = array();
+
+        // add new order status after processing
+        foreach ($order_statuses as $key => $status) {
+            $new_order_statuses[$key] = $status;
+
+            if ('wc-processing' === $key) {
+                $new_order_statuses['wc-underpaid'] = 'Underpaid';
+                $new_order_statuses['wc-overpaid'] = 'Overpaid';
+                $new_order_statuses['wc-btc-pending'] = 'BTC Pending';
+            }
+        }
+
+        return $new_order_statuses;
+    }
+    add_filter('wc_order_statuses', 'add_custom_order_statuses');
 
     // Defined here, because it needs to be defined after WC_Payment_Gateway is already loaded.
     class WC_Gateway_Zaprite_Server extends WC_Payment_Gateway {
@@ -216,7 +281,7 @@ function zaprite_server_init()
             $currency = $order->get_currency();
             // error_log(print_r($order, true));
             $total_in_smallest_unit = Utils::convert_to_smallest_unit($amount);
-            error_log("ZAPRITE: currency in smallest unit $total_in_smallest_unit $currency , decimals: $decimals");
+            error_log("ZAPRITE: currency in smallest unit $total_in_smallest_unit $currency");
 
             // Call the Zaprite public api to create the invoice
             $r = $this->api->createCharge($total_in_smallest_unit, $currency, $memo, $order_id);
@@ -256,6 +321,15 @@ function zaprite_server_init()
                 $order->update_status( 'pending', 'Order status updated to pending by Zaprite.' );
                 $order->save();
             }
+        }
+
+        /**
+         * Checks payment on Thank you.
+         */
+        public function check_payment()
+        {
+            //  double check if payment is paid using Zaprite
+            die();
         }
 
     }

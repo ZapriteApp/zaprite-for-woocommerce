@@ -28,6 +28,35 @@ class Utils {
         // Convert the total to the smallest unit
         return $amount * pow(10, $decimals);
     }
+    public static function convert_order_status($status) {
+        $zapriteStatus = strtolower($status);
+        $wooStatus = "";
+
+        // convert zaprite to woo status
+        switch ($zapriteStatus) {
+            case 'pending':
+                $wooStatus = "pending"; // do nothing
+                break;
+            case 'processing':
+                $wooStatus = "wc-btc-pending";
+                break;
+            case 'paid':
+                $wooStatus = "processing"; // its paid on zaprite but still processing to be shipped on woo
+                break;
+            case 'overpaid':
+                $wooStatus = "wc-overpaid";
+                break;
+            case 'underpaid':
+                $wooStatus = "wc-underpaid";
+                break;
+            case 'complete':
+                $wooStatus = "processing"; // its completed on zaprite but still processing to be shipped on woo
+                break;
+            default:
+
+        }
+        return $wooStatus;
+    }
 }
 
 class CurlWrapper {

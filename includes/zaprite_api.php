@@ -32,7 +32,7 @@ class API {
 
         error_log("Zapite: Complete Link $completelink");
 
-        $orderPaidCallback = "$site_url/wp-json/zaprite_server/zaprite/v2/payment_complete/$order_id/?key=$key";
+        $orderPaidCallback = "$site_url/wp-json/zaprite_server/zaprite/v1/update_status/$order_id/?key=$key";
         $data = [
             "apiKey" => $this->api_key,
             "amount" => $amount,
