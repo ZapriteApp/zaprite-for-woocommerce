@@ -46,4 +46,22 @@ class API {
         return $response;
     }
 
+    public function checkCharge($order_id) {
+        error_log("ZAPRITE: checkCharge");
+        $c = new CurlWrapper();
+        $order = wc_get_order($order_id);
+        $headers = array(
+            'Content-Type' => 'application/json'
+        );
+        $zapriteOrderId = $order->get_meta('zaprite_order_id', $order_id, true);
+        error_log("ZAPRITE: checkCharge zapriteOrderId = $zapriteOrderId");
+        $data = [
+            "apiKey" => $this->api_key,
+            "orderId" => "$zapriteOrderId"
+        ];
+        $apiKey = $this->api_key;
+        $response = $c->post("$this->zaprite_url/api/public/woo/check-order",  array(), json_encode($data), $headers);
+        error_log("Check order status ===>" . $response['status'] );
+        return $response;
+    }
 }
