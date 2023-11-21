@@ -1,20 +1,24 @@
 <?php
 
 /*
-Plugin Name: Zaprite - Bitcoin Onchain and Lightning Payment Gateway
+Plugin Name: WooCommerce Payment Gateway - Zaprite
 Plugin URI: https://github.com/ZapriteApp/zaprite-for-woocommerce
-Description: Accept Bitcoin from your Woo store both on-chain and with Lightning with Zaprite
+Description: Accept bitcoin (on-chain and lightning) and fiat payments in one unified Zaprite Checkout.
 Version: 1.0.0
 Author: Zaprite
 Author URI: https://zaprite.com
+Text Domain: zaprite-for-woocommerce
 */
 
 add_action('plugins_loaded', 'zaprite_server_init');
 
 define('ZAPRITE_ENV', 'dev'); // change this to 'prod' for production, or 'dev' for development
 define('ZAPRITE_WOOCOMMERCE_VERSION', '1.0.0');
-define('ZAPRITE_PATH', 'https://zaprite.com' ); // 'https://zaprite-v2-1mpth5l9h-zaprite.vercel.app'
+define('ZAPRITE_PATH', 'https://app.zaprite.com' ); // 'https://zaprite-v2-1mpth5l9h-zaprite.vercel.app'
 define('ZAPRITE_DEV_PATH', 'http://localhost:3000');
+define('WC_PAYMENT_GATEWAY_ZAPRITE_FILE', __FILE__);
+define('WC_PAYMENT_GATEWAY_ZAPRITE_URL', plugins_url('', WC_PAYMENT_GATEWAY_ZAPRITE_FILE));
+define('WC_PAYMENT_GATEWAY_ZAPRITE_ASSETS', WC_PAYMENT_GATEWAY_ZAPRITE_URL . '/assets');
 
 require_once(__DIR__ . '/includes/init.php');
 
@@ -171,10 +175,10 @@ function zaprite_server_init()
             global $woocommerce;
 
             $this->id                 = 'zaprite';
-            $this->icon = $this->get_option('payment_image');
+            $this->icon               = $this->get_option('payment_image');
             $this->has_fields         = false;
             $this->method_title       = 'Zaprite';
-            $this->method_description = 'Take payments in Bitcoin Onchain and with Lightning using Zaprite.';
+            $this->method_description = __('Bitcoin payments made easy. Accept on-chain, lightning and fiat payments in one unified Zaprite Checkout experience.', 'zaprite-for-woocommerce');
 
             $this->init_form_fields();
             $this->init_settings();
@@ -206,8 +210,8 @@ function zaprite_server_init()
         public function admin_options()
         {
             ?>
-            <h3><?php _e('Zaprite', 'woothemes'); ?></h3>
-            <p><?php _e('Accept Bitcoin instantly through the Zaprite extension. First enable the Woocommerce extension on Zaprite and choose your default wallet. Then copy the api key in the settings below.', 'woothemes'); ?></p>
+            <h3><?php _e('Zaprite', 'zaprite-for-woocommerce'); ?></h3>
+            <p><?php _e('Accept bitcoin (on-chain and lightning) and fiat payments instantly through your hosted Zaprite Checkout. First, enable the WooCommerce extension on Zaprite Connections page and configure your preferred Checkout. Finally, copy the API Key shown into the field below.', 'zaprite-for-woocommerce'); ?></p>
             <table class="form-table">
                 <?php $this->generate_settings_html(); ?>
             </table>
@@ -219,36 +223,51 @@ function zaprite_server_init()
          */
         public function init_form_fields()
         {
+
+            $images_url   = WC_PAYMENT_GATEWAY_ZAPRITE_ASSETS . '/images/';
+            $icon_file   = 'zaprite@2x.png';
+            $icon_style      = 'style="max-height: 20px !important;max-width: none !important;"';
+            $icon_url   = $images_url . $icon_file;
+            $icon_html       = '<img src="' . $icon_url . $icon_file . '" alt="Zaprite logo" ' . $icon_style . ' />';
+    
             // echo("init_form_fields");
             $this->form_fields = array(
-                'enabled'                             => array(
-                    'title'       => __('Enable Zaprite payment', 'woocommerce'),
-                    'label'       => __('Enable Bitcoin payments via Zaprite', 'woocommerce'),
+                'enabled'                       => array(
+                    'title'       => __('Enable Zaprite Payments', 'zaprite-for-woocommerce'),
+                    'label'       => __('Enable payments via Zaprite Checkout.', 'zaprite-for-woocommerce'),
                     'type'        => 'checkbox',
                     'description' => '',
                     'default'     => 'no',
                 ),
-                'title'                               => array(
-                    'title'       => __('Title', 'woocommerce'),
+                'title'                         => array(
+                    'title'       => __('Payment Method Name', 'zaprite-for-woocommerce'),
                     'type'        => 'text',
-                    'description' => __('The payment method title which a customer sees at the checkout of your store.', 'woocommerce'),
-                    'default'     => __('Pay with Bitcoin: on-chain or with Lightning', 'woocommerce'),
+                    'description' => __('The payment method title which a customer sees at the checkout of your store.', 'zaprite-for-woocommerce'),
+                    'default'     => __('Checkout with Zaprite', 'zaprite-for-woocommerce'),
                 ),
-                'description'                         => array(
-                    'title'       => __('Description', 'woocommerce'),
-                    'type'        => 'textarea',
-                    'description' => __('The payment method description which a customer sees at the checkout of your store.', 'woocommerce'),
-                    'default'     => __('Powered by Zaprite.'),
-                ),
-                'payment_image'                         => array(
-                    'title'       => __('Image', 'woocommerce'),
+                'description'                   => array(
+                    'title'       => __('Description', 'zaprite-for-woocommerce'),
                     'type'        => 'text',
-                    'description' => __('The url of an image displayed by the payment method', 'woocommerce'),
-                    'default'     => __('https://app.zaprite.com/_next/image?url=%2Ffavicon.png&w=48&q=75'),
+                    'description' => __('The payment method description which a customer sees at the checkout of your store.', 'zaprite-for-woocommerce'),
+                    'default'     => __('Powered by Zaprite.', 'zaprite-for-woocommerce'),
+                    // 'disabled'    => true,
                 ),
-                'zaprite_api_key'           => array(
-                    'title'       => __('Api Key', 'woocommerce'),
-                    'description' => __('Enter your Zaprite api key', 'woocommerce'),
+                'payment_image'                 => array(
+                    'title'       => __('Checkout Image', 'zaprite-for-woocommerce'),
+                    'type'        => 'text',
+                    'description' => __('The url of an image displayed by the payment method', 'zaprite-for-woocommerce'),
+                    'default'     => $icon_url,
+                    // 'disabled'    => true,
+                ),
+                'zaprite_statement_descriptor'  => array(
+                    'title'       => __('Statement Descriptor', 'zaprite-for-woocommerce'),
+                    'type'        => 'text',
+                    'description' => __('This note will be visible to your customer in the statements and transaction history of their payment account.', 'zaprite-for-woocommerce'),
+                    'default'     => sprintf(__('Payment to %s', 'zaprite-for-woocommerce'), get_bloginfo('name')),
+                ),
+                'zaprite_api_key'               => array(
+                    'title'       => __('Zaprite API Key', 'zaprite-for-woocommerce'),
+                    'description' => __('Enter the Zaprite API Key from your <a href="https://app.zaprite.com/connections/woo" target="_blank" rel="noopener noreferrer">WooCommerce plugin settings</a> page.', 'zaprite-for-woocommerce'),
                     'type'        => 'text',
                     'default'     => '',
                 )
