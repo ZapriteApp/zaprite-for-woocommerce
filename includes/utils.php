@@ -28,7 +28,7 @@ class Utils {
         // Convert the total to the smallest unit
         return $amount * pow(10, $decimals);
     }
-    public static function convert_order_status($status) {
+    public static function convert_zaprite_order_status_to_woo_status($status) {
         $zapriteStatus = strtolower($status);
         $wooStatus = "";
 

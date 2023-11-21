@@ -53,27 +53,32 @@ function zaprite_server_init()
     }
     add_filter('woocommerce_payment_gateways', 'add_zaprite_server_gateway');
 
+    // Called by zaprite to update the status in woo
     function zaprite_server_add_update_status_callback($data)
     {
         error_log("ZAPRITE: webhook zaprite_server_add_update_status_callback");
         $order_id = $data["id"];
-        if (empty($order_id)) {
+        $api_key = $data->get_header("apiKey");
+        $api = new API($api_key);
+        $orderStatusRes = $api->checkCharge($order_id);
+        if (empty($order_id) || $orderStatusRes['status'] !== 200 || $api_key == null) {
             return new WP_Error(
                 'server_error',
-                'Missing order id',
+                'Missing order id, status, or apiKey',
                 array( 'status' => 500 )
             );
         }
-        $status = $data->get_param('status'); // processing (aka paid), underpaid, overpaid or btc-pending
-        error_log("ZAPRITE: order status update - $status");
-        $order    = wc_get_order($order_id);
+        $order = wc_get_order($order_id);
+
+        // check keys
         $keyToCheck = $data->get_param('key');
-        error_log("ZAPRITE: keyToCheck $keyToCheck");
-        $key = $order->get_order_key();
-        error_log("ZAPRITE: correct key $key");
+        $key = $order->get_order_key(); // key from the order database
 
         if ($key == $keyToCheck) {
-            $wooStatus = Utils::convert_order_status($status);
+            // check status
+            $status = $orderStatusRes['response']['status']; // processing (aka paid), underpaid, overpaid or btc-pending
+            error_log("ZAPRITE: order status update from zaprite api - $status");
+            $wooStatus = Utils::convert_zaprite_order_status_to_woo_status($status);
             error_log("ZAPRITE: wooStatus - $wooStatus");
             if ($wooStatus == "") {
                 return new WP_REST_Response('Invalid order status.', 400);
@@ -180,7 +185,7 @@ function zaprite_server_init()
             $url       = $this->get_option('zaprite_server_url');
             $api_key   = $this->get_option('zaprite_api_key');
 
-            $this->api = new API($url, $api_key);
+            $this->api = new API($api_key);
 
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(
                 $this,
