@@ -33,6 +33,13 @@ function zaprite_server_init()
         return;
     };
 
+    function zaprite_add_settings_link($links) {
+        $settings_link = '<a href="' . admin_url('admin.php?page=wc-settings&tab=checkout&section=zaprite') . '">' . __('Settings', 'textdomain') . '</a>';
+        array_push($links, $settings_link);
+        return $links;
+    }
+    add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'zaprite_add_settings_link');
+
     // Set the cURL timeout to 15 seconds. When requesting a lightning invoice
     // If using Tor, a short timeout can result in failures.
     add_filter('http_request_args', 'zaprite_server_http_request_args', 100, 1);
@@ -229,7 +236,7 @@ function zaprite_server_init()
             $icon_style      = 'style="max-height: 20px !important;max-width: none !important;"';
             $icon_url   = $images_url . $icon_file;
             $icon_html       = '<img src="' . $icon_url . $icon_file . '" alt="Zaprite logo" ' . $icon_style . ' />';
-    
+
             // echo("init_form_fields");
             $this->form_fields = array(
                 'enabled'                       => array(
@@ -250,7 +257,7 @@ function zaprite_server_init()
                     'type'        => 'text',
                     'description' => __('The payment method description which a customer sees at the checkout of your store.', 'zaprite-for-woocommerce'),
                     'default'     => __('Powered by Zaprite.', 'zaprite-for-woocommerce'),
-                    // 'disabled'    => true,
+                    'disabled'    => true,
                 ),
                 'payment_image'                 => array(
                     'title'       => __('Checkout Image', 'zaprite-for-woocommerce'),
