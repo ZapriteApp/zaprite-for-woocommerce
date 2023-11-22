@@ -33,147 +33,13 @@ function zaprite_server_init()
         return;
     };
 
-    function zaprite_add_settings_link($links) {
-        $settings_link = '<a href="' . admin_url('admin.php?page=wc-settings&tab=checkout&section=zaprite') . '">' . __('Settings', 'textdomain') . '</a>';
-        array_push($links, $settings_link);
-        return $links;
-    }
-    add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'zaprite_add_settings_link');
-
-    // Set the cURL timeout to 15 seconds. When requesting a lightning invoice
-    // If using Tor, a short timeout can result in failures.
-    add_filter('http_request_args', 'zaprite_server_http_request_args', 100, 1);
-    function zaprite_server_http_request_args($r) //called on line 237
-    {
-        $r['timeout'] = 15;
-        return $r;
-    }
-
-    add_action('http_api_curl', 'zaprite_server_http_api_curl', 100, 1);
-    function zaprite_server_http_api_curl($handle)
-    {
-        curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 15);
-        curl_setopt($handle, CURLOPT_TIMEOUT, 15);
-    }
-
     // Register the gateway, essentially a controller that handles all requests.
+    add_filter('woocommerce_payment_gateways', 'add_zaprite_server_gateway');
     function add_zaprite_server_gateway($methods)
     {
         $methods[] = 'WC_Gateway_Zaprite_Server';
         return $methods;
     }
-    add_filter('woocommerce_payment_gateways', 'add_zaprite_server_gateway');
-
-    // Called by zaprite to update the status in woo
-    function zaprite_server_add_update_status_callback($data)
-    {
-        error_log("ZAPRITE: webhook zaprite_server_add_update_status_callback");
-        $order_id = $data["id"];
-        $api_key = $data->get_header("apiKey");
-        $api = new API($api_key);
-        $orderStatusRes = $api->checkCharge($order_id);
-        if (empty($order_id) || $orderStatusRes['status'] !== 200 || $api_key == null) {
-            return new WP_Error(
-                'server_error',
-                'Missing order id, status, or apiKey',
-                array( 'status' => 500 )
-            );
-        }
-        $order = wc_get_order($order_id);
-
-        // check keys
-        $keyToCheck = $data->get_param('key');
-        $key = $order->get_order_key(); // key from the order database
-
-        if ($key == $keyToCheck) {
-            // check status
-            $status = $orderStatusRes['response']['status']; // processing (aka paid), underpaid, overpaid or btc-pending
-            error_log("ZAPRITE: order status update from zaprite api - $status");
-            $wooStatus = Utils::convert_zaprite_order_status_to_woo_status($status);
-            error_log("ZAPRITE: wooStatus - $wooStatus");
-            if ($wooStatus == "") {
-                return new WP_REST_Response('Invalid order status.', 400);
-            }
-            if($wooStatus == "processing") {
-                $order->add_order_note('Payment is settled.');
-                $order->payment_complete();
-                $order->save();
-                error_log("PAID");
-                echo(json_encode(array(
-                    'result'   => 'success',
-                    'redirect' => $order->get_checkout_order_received_url(),
-                    'paid'     => true
-                )));
-            } else if ($wooStatus == "pending") {
-                // do nothing
-            } else {
-                $order->update_status($wooStatus, 'Order status updated via API.', true);
-                $order->save();
-                error_log("ZAPRITE: update status - $wooStatus");
-            }
-            return new WP_REST_Response('Order status updated.', 200);
-        } else {
-            return new WP_Error(
-                'unauthorized_access',
-                'Unauthorized access - keys do not match',
-                array( 'status' => 401 )
-            );
-        }
-    }
-
-    add_action("rest_api_init", function () {
-        error_log("ZAPRITE: rest_api_init zaprite");
-        register_rest_route("zaprite_server/zaprite/v1", "/update_status/(?P<id>\d+)", array(
-            "methods"  => "GET",
-            "callback" => "zaprite_server_add_update_status_callback",
-            "permission_callback" => "__return_true",
-        ));
-    });
-
-    function add_custom_order_status() {
-        register_post_status('wc-underpaid', array(
-            'label'                     => 'Underpaid',
-            'public'                    => true,
-            'exclude_from_search'       => false,
-            'show_in_admin_all_list'    => true,
-            'show_in_admin_status_list' => true,
-            'label_count'               => _n_noop('Underpaid (%s)', 'Underpaid (%s)')
-        ));
-        register_post_status('wc-overpaid', array(
-            'label'                     => 'Overpaid',
-            'public'                    => true,
-            'exclude_from_search'       => false,
-            'show_in_admin_all_list'    => true,
-            'show_in_admin_status_list' => true,
-            'label_count'               => _n_noop('Overpaid (%s)', 'Overpaid (%s)')
-        ));
-        register_post_status('wc-btc-pending', array(
-            'label'                     => 'BTC Pending',
-            'public'                    => true,
-            'exclude_from_search'       => false,
-            'show_in_admin_all_list'    => true,
-            'show_in_admin_status_list' => true,
-            'label_count'               => _n_noop('BTC Pending (%s)', 'BTC Pending (%s)')
-        ));
-    }
-    add_action('init', 'add_custom_order_status');
-    function add_custom_order_statuses($order_statuses) {
-        $new_order_statuses = array();
-
-        // add new order status after processing
-        foreach ($order_statuses as $key => $status) {
-            $new_order_statuses[$key] = $status;
-
-            if ('wc-processing' === $key) {
-                $new_order_statuses['wc-underpaid'] = 'Underpaid';
-                $new_order_statuses['wc-overpaid'] = 'Overpaid';
-                $new_order_statuses['wc-btc-pending'] = 'BTC Pending';
-            }
-        }
-
-        return $new_order_statuses;
-    }
-    add_filter('wc_order_statuses', 'add_custom_order_statuses');
 
     // Defined here, because it needs to be defined after WC_Payment_Gateway is already loaded.
     class WC_Gateway_Zaprite_Server extends WC_Payment_Gateway {
@@ -283,7 +149,7 @@ function zaprite_server_init()
 
 
         /**
-         * ? Output for thank you page.
+         * Output for thank you page.
          */
         public function thankyou()
         {
@@ -371,11 +237,180 @@ function zaprite_server_init()
                     error_log("ZAPRITE: check_payment paid true!!!");
                 }
             } else {
-                // TODO: handle non 200 response status
+                // handle non 200 response status
             }
             die();
         }
 
     }
+
+    /**
+     * Custom REST Endpoints
+     */
+    function register_custom_rest_endpoints () {
+        /**
+        * Update Status Custom REST Endpoint
+        * ~/wp-json/zaprite_server/zaprite/v1/update_status/60/?key=wc_order_9VC4svMp4ttvN
+        * This custom endpoint updates the order status from the zaprite app
+        * NOTE: This needs to be registered outside of the WC_Payment_Gateway
+        */
+        function zaprite_server_add_update_status_callback($data)
+        {
+            error_log("ZAPRITE: webhook zaprite_server_add_update_status_callback");
+            $order_id = $data["id"];
+            $api_key = $data->get_header("apiKey");
+            $api = new API($api_key);
+            $orderStatusRes = $api->checkCharge($order_id);
+            if (empty($order_id) || $orderStatusRes['status'] !== 200 || $api_key == null) {
+                return new WP_Error(
+                    'server_error',
+                    'Missing order id, status, or apiKey',
+                    array( 'status' => 500 )
+                );
+            }
+            $order = wc_get_order($order_id);
+
+            // check keys
+            $keyToCheck = $data->get_param('key');
+            $key = $order->get_order_key(); // key from the order database
+
+            if ($key == $keyToCheck) {
+                // check status
+                $status = $orderStatusRes['response']['status']; // processing (aka paid), underpaid, overpaid or btc-pending
+                error_log("ZAPRITE: order status update from zaprite api - $status");
+                $wooStatus = Utils::convert_zaprite_order_status_to_woo_status($status);
+                error_log("ZAPRITE: wooStatus - $wooStatus");
+                if ($wooStatus == "") {
+                    return new WP_REST_Response('Invalid order status.', 400);
+                }
+                if($wooStatus == "processing") {
+                    $order->add_order_note('Payment is settled.');
+                    $order->payment_complete();
+                    $order->save();
+                    error_log("PAID");
+                    echo(json_encode(array(
+                        'result'   => 'success',
+                        'redirect' => $order->get_checkout_order_received_url(),
+                        'paid'     => true
+                    )));
+                } else if ($wooStatus == "pending") {
+                    // do nothing
+                } else {
+                    $order->update_status($wooStatus, 'Order status updated via API.', true);
+                    $order->save();
+                    error_log("ZAPRITE: update status - $wooStatus");
+                }
+                return new WP_REST_Response('Order status updated.', 200);
+            } else {
+                return new WP_Error(
+                    'unauthorized_access',
+                    'Unauthorized access - keys do not match',
+                    array( 'status' => 401 )
+                );
+            }
+        }
+        add_action("rest_api_init", function () {
+            error_log("ZAPRITE: rest_api_init zaprite");
+            register_rest_route("zaprite_server/zaprite/v1", "/update_status/(?P<id>\d+)", array(
+                "methods"  => "GET",
+                "callback" => "zaprite_server_add_update_status_callback",
+                "permission_callback" => "__return_true",
+            ));
+        });
+    }
+
+    register_custom_rest_endpoints();
+
+    /**
+    * Filters and Actions
+    */
+    function register_filters_and_actions() {
+
+        // Settings Link
+        function zaprite_add_settings_link($links) {
+            $settings_link = '<a href="' . admin_url('admin.php?page=wc-settings&tab=checkout&section=zaprite') . '">' . __('Settings', 'zaprite-for-woocommerce') . '</a>';
+            array_push($links, $settings_link);
+            return $links;
+        }
+
+        // Setup Guide Link
+        function zaprite_add_meta_links($links, $file) {
+            $plugin_base = plugin_basename(__FILE__);
+            if ($file == $plugin_base) {
+                // Add your custom links
+                $new_links = array(
+                    '<a href="https://blog.zaprite.com/integrating-zaprite-with-woocommerce">' . __('Setup Guide', 'zaprite-for-woocommerce') . '</a>',
+                    // Add more links as needed
+                );
+                $links = array_merge($links, $new_links);
+            }
+            return $links;
+        }
+
+        // Set the cURL timeout to 15 seconds. When requesting a lightning invoice
+        // If using Tor, a short timeout can result in failures.
+        function zaprite_server_http_request_args($r) //called on line 237
+        {
+            $r['timeout'] = 15;
+            return $r;
+        }
+
+        function zaprite_server_http_api_curl($handle)
+        {
+            curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 15);
+            curl_setopt($handle, CURLOPT_TIMEOUT, 15);
+        }
+
+        function add_custom_order_status() {
+            register_post_status('wc-underpaid', array(
+                'label'                     => 'Underpaid',
+                'public'                    => true,
+                'exclude_from_search'       => false,
+                'show_in_admin_all_list'    => true,
+                'show_in_admin_status_list' => true,
+                'label_count'               => _n_noop('Underpaid (%s)', 'Underpaid (%s)')
+            ));
+            register_post_status('wc-overpaid', array(
+                'label'                     => 'Overpaid',
+                'public'                    => true,
+                'exclude_from_search'       => false,
+                'show_in_admin_all_list'    => true,
+                'show_in_admin_status_list' => true,
+                'label_count'               => _n_noop('Overpaid (%s)', 'Overpaid (%s)')
+            ));
+            register_post_status('wc-btc-pending', array(
+                'label'                     => 'BTC Pending',
+                'public'                    => true,
+                'exclude_from_search'       => false,
+                'show_in_admin_all_list'    => true,
+                'show_in_admin_status_list' => true,
+                'label_count'               => _n_noop('BTC Pending (%s)', 'BTC Pending (%s)')
+            ));
+        }
+
+        function add_custom_order_statuses($order_statuses) {
+            $new_order_statuses = array();
+            // add new order status after processing
+            foreach ($order_statuses as $key => $status) {
+                $new_order_statuses[$key] = $status;
+
+                if ('wc-processing' === $key) {
+                    $new_order_statuses['wc-underpaid'] = 'Underpaid';
+                    $new_order_statuses['wc-overpaid'] = 'Overpaid';
+                    $new_order_statuses['wc-btc-pending'] = 'BTC Pending';
+                }
+            }
+            return $new_order_statuses;
+        }
+
+        add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'zaprite_add_settings_link');
+        add_filter('plugin_row_meta', 'zaprite_add_meta_links', 10, 2);
+        add_filter('http_request_args', 'zaprite_server_http_request_args', 100, 1);
+        add_action('http_api_curl', 'zaprite_server_http_api_curl', 100, 1);
+        add_action('init', 'add_custom_order_status');
+        add_filter('wc_order_statuses', 'add_custom_order_statuses');
+    }
+
+    register_filters_and_actions();
 
 }
