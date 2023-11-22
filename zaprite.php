@@ -14,11 +14,15 @@ add_action('plugins_loaded', 'zaprite_server_init');
 
 define('ZAPRITE_ENV', 'dev'); // change this to 'prod' for production, or 'dev' for development
 define('ZAPRITE_WOOCOMMERCE_VERSION', '1.0.0');
-define('ZAPRITE_PATH', 'https://app.zaprite.com' ); // 'https://zaprite-v2-1mpth5l9h-zaprite.vercel.app'
+define('ZAPRITE_PATH', 'https://app.zaprite.com' );
 define('ZAPRITE_DEV_PATH', 'http://localhost:3000');
 define('WC_PAYMENT_GATEWAY_ZAPRITE_FILE', __FILE__);
 define('WC_PAYMENT_GATEWAY_ZAPRITE_URL', plugins_url('', WC_PAYMENT_GATEWAY_ZAPRITE_FILE));
 define('WC_PAYMENT_GATEWAY_ZAPRITE_ASSETS', WC_PAYMENT_GATEWAY_ZAPRITE_URL . '/assets');
+
+include_once(__DIR__ . '/includes/hooks.php');
+register_activation_hook(__FILE__, 'message_on_plugin_activate');
+add_action('admin_notices', 'zaprite_admin_notices');
 
 require_once(__DIR__ . '/includes/init.php');
 
@@ -409,6 +413,8 @@ function zaprite_server_init()
         add_action('http_api_curl', 'zaprite_server_http_api_curl', 100, 1);
         add_action('init', 'add_custom_order_status');
         add_filter('wc_order_statuses', 'add_custom_order_statuses');
+
+
     }
 
     register_filters_and_actions();
