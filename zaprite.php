@@ -96,7 +96,18 @@ function zaprite_server_init()
         {
             ?>
             <h3><?php _e('Zaprite', 'zaprite-for-woocommerce'); ?></h3>
-            <p><?php _e('Accept bitcoin (on-chain and lightning) and fiat payments instantly through your hosted Zaprite Checkout. First, enable the WooCommerce extension on Zaprite Connections page and configure your preferred Checkout. Finally, copy the API Key shown into the field below.', 'zaprite-for-woocommerce'); ?></p>
+            <p><?php _e("
+                <p>
+                    Accept bitcoin (on-chain and lightning) and fiat payments instantly through your
+                    hosted Zaprite Checkout. First, enable the WooCommerce extension on Zaprite Connections
+                    page and configure your preferred Checkout. Finally, copy the API Key shown into the field below.
+                </p>
+                <p>
+                    <a href='https://blog.zaprite.com/integrating-zaprite-with-woocommerce' target='_blank' rel='noreferrer'>
+                        Setup Guide
+                    </a>
+                </p>
+                ", 'zaprite-for-woocommerce'); ?></p>
             <table class="form-table">
                 <?php $this->generate_settings_html(); ?>
             </table>
