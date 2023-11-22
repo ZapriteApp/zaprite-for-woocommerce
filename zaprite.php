@@ -48,7 +48,6 @@ function zaprite_server_init()
             global $woocommerce;
 
             $this->id                 = 'zaprite';
-            $this->icon               = $this->get_option('payment_image');
             $this->has_fields         = false;
             $this->method_title       = 'Zaprite';
             $this->method_description = __('Bitcoin payments made easy. Accept on-chain, lightning and fiat payments in one unified Zaprite Checkout experience.', 'zaprite-for-woocommerce');
@@ -63,6 +62,15 @@ function zaprite_server_init()
             $api_key   = $this->get_option('zaprite_api_key');
 
             $this->api = new API($api_key);
+
+            if ($this->get_option('payment_image') == 'yes') {
+                $images_url   = WC_PAYMENT_GATEWAY_ZAPRITE_ASSETS . '/images/';
+                $icon_file   = 'zaprite@2x.png';
+                $icon_style  = 'style="max-height: 20px !important;max-width: none !important;"';
+                $icon_url   = $images_url . $icon_file;
+                $icon_html  = '<img src="' . $icon_url . $icon_file . '" alt="Zaprite logo" ' . $icon_style . ' />';
+                $this->icon = $icon_url;
+            }
 
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(
                 $this,
@@ -96,13 +104,6 @@ function zaprite_server_init()
          */
         public function init_form_fields()
         {
-
-            $images_url   = WC_PAYMENT_GATEWAY_ZAPRITE_ASSETS . '/images/';
-            $icon_file   = 'zaprite@2x.png';
-            $icon_style      = 'style="max-height: 20px !important;max-width: none !important;"';
-            $icon_url   = $images_url . $icon_file;
-            $icon_html       = '<img src="' . $icon_url . $icon_file . '" alt="Zaprite logo" ' . $icon_style . ' />';
-
             // echo("init_form_fields");
             $this->form_fields = array(
                 'enabled'                       => array(
@@ -126,11 +127,10 @@ function zaprite_server_init()
                     'disabled'    => true,
                 ),
                 'payment_image'                 => array(
-                    'title'       => __('Checkout Image', 'zaprite-for-woocommerce'),
-                    'type'        => 'text',
-                    'description' => __('The url of an image displayed by the payment method', 'zaprite-for-woocommerce'),
-                    'default'     => $icon_url,
-                    // 'disabled'    => true,
+                    'title'       => __('Show checkout Image', 'zaprite-for-woocommerce'),
+                    'type'        => 'checkbox',
+                    'description' => 'Show Zaprite logo on checkout',
+                    'default'     => 'yes',
                 ),
                 'zaprite_statement_descriptor'  => array(
                     'title'       => __('Statement Descriptor', 'zaprite-for-woocommerce'),
