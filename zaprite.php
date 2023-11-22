@@ -279,7 +279,7 @@ function zaprite_server_init()
             if (empty($order_id) || $orderStatusRes['status'] !== 200 || $api_key == null) {
                 return new WP_Error(
                     'server_error',
-                    'Missing order id, status, or apiKey',
+                    'Missing Order Id or apiKey',
                     array( 'status' => 500 )
                 );
             }
