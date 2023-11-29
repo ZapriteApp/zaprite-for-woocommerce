@@ -60,7 +60,7 @@ function zaprite_server_init()
             $this->init_settings();
 
             $this->title       = $this->get_option('title');
-            $this->description = $this->get_option('description');
+            $this->description =  "Powered by Zaprite"; //$this->get_option('description'); // hard code for now, disbled in form setting does not work as you would think, see https://chat.openai.com/share/308744d4-a771-41e0-879e-306c112ec0c4
 
             $url       = $this->get_option('zaprite_server_url');
             $api_key   = $this->get_option('zaprite_api_key');
@@ -133,14 +133,16 @@ function zaprite_server_init()
                     'title'       => __('Description', 'zaprite-for-woocommerce'),
                     'type'        => 'text',
                     'description' => __('The payment method description which a customer sees at the checkout of your store.', 'zaprite-for-woocommerce'),
-                    'default'     => __('Powered by Zaprite.', 'zaprite-for-woocommerce'),
-                    'disabled'    => true,
+                    'placeholder' => __('Powered by Zaprite', 'zaprite-for-woocommerce'),
+                    'default'     => __('Powered by Zaprite', 'zaprite-for-woocommerce'),
+                    'disabled'    => __(true, 'zaprite-for-woocommerce'),
                 ),
                 'payment_image'                 => array(
                     'title'       => __('Show checkout Image', 'zaprite-for-woocommerce'),
+                    'label'       => __('Show Zaprite image on checkout', 'zaprite-for-woocommerce'),
                     'type'        => 'checkbox',
                     'description' => Utils::get_icon_image_html(),
-                    'default'     => 'yes',
+                    'default'     =>  __('yes', 'zaprite-for-woocommerce'),
                 ),
                 'zaprite_statement_descriptor'  => array(
                     'title'       => __('Statement Descriptor', 'zaprite-for-woocommerce'),
