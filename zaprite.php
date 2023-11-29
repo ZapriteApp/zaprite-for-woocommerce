@@ -68,12 +68,7 @@ function zaprite_server_init()
             $this->api = new API($api_key);
 
             if ($this->get_option('payment_image') == 'yes') {
-                $images_url   = WC_PAYMENT_GATEWAY_ZAPRITE_ASSETS . '/images/';
-                $icon_file   = 'zaprite@2x.png';
-                $icon_style  = 'style="max-height: 20px !important;max-width: none !important;"';
-                $icon_url   = $images_url . $icon_file;
-                $icon_html  = '<img src="' . $icon_url . $icon_file . '" alt="Zaprite logo" ' . $icon_style . ' />';
-                $this->icon = $icon_url;
+                $this->icon = Utils::getIconImageUrl();
             }
 
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(
@@ -144,7 +139,7 @@ function zaprite_server_init()
                 'payment_image'                 => array(
                     'title'       => __('Show checkout Image', 'zaprite-for-woocommerce'),
                     'type'        => 'checkbox',
-                    'description' => 'Show Zaprite logo on checkout',
+                    'description' => Utils::getIconImageHtml(),
                     'default'     => 'yes',
                 ),
                 'zaprite_statement_descriptor'  => array(
@@ -158,7 +153,7 @@ function zaprite_server_init()
                     'description' => __('Enter the Zaprite API Key from your <a href="https://app.zaprite.com/connections/woo" target="_blank" rel="noopener noreferrer">WooCommerce plugin settings</a> page.', 'zaprite-for-woocommerce'),
                     'type'        => 'text',
                     'default'     => '',
-                )
+                ),
             );
         }
 
@@ -424,7 +419,6 @@ function zaprite_server_init()
         add_action('http_api_curl', 'zaprite_server_http_api_curl', 100, 1);
         add_action('init', 'add_custom_order_status');
         add_filter('wc_order_statuses', 'add_custom_order_statuses');
-
 
     }
 
