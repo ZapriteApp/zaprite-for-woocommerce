@@ -68,7 +68,7 @@ function zaprite_server_init()
             $this->api = new API($api_key);
 
             if ($this->get_option('payment_image') == 'yes') {
-                $this->icon = Utils::getIconImageUrl();
+                $this->icon = Utils::get_icon_image_url();
             }
 
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(
@@ -139,7 +139,7 @@ function zaprite_server_init()
                 'payment_image'                 => array(
                     'title'       => __('Show checkout Image', 'zaprite-for-woocommerce'),
                     'type'        => 'checkbox',
-                    'description' => Utils::getIconImageHtml(),
+                    'description' => Utils::get_icon_image_html(),
                     'default'     => 'yes',
                 ),
                 'zaprite_statement_descriptor'  => array(
