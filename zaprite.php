@@ -60,7 +60,7 @@ function zaprite_server_init()
             $this->init_settings();
 
             $this->title       = $this->get_option('title');
-            $this->description = $this->get_option('description');
+            $this->description =  "Powered by Zaprite"; //$this->get_option('description'); // hard code for now, disbled in form setting does not work as you would think, see https://chat.openai.com/share/308744d4-a771-41e0-879e-306c112ec0c4
 
             $url       = $this->get_option('zaprite_server_url');
             $api_key   = $this->get_option('zaprite_api_key');
@@ -68,12 +68,7 @@ function zaprite_server_init()
             $this->api = new API($api_key);
 
             if ($this->get_option('payment_image') == 'yes') {
-                $images_url   = WC_PAYMENT_GATEWAY_ZAPRITE_ASSETS . '/images/';
-                $icon_file   = 'zaprite@2x.png';
-                $icon_style  = 'style="max-height: 20px !important;max-width: none !important;"';
-                $icon_url   = $images_url . $icon_file;
-                $icon_html  = '<img src="' . $icon_url . $icon_file . '" alt="Zaprite logo" ' . $icon_style . ' />';
-                $this->icon = $icon_url;
+                $this->icon = Utils::get_icon_image_url();
             }
 
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(
@@ -138,14 +133,16 @@ function zaprite_server_init()
                     'title'       => __('Description', 'zaprite-for-woocommerce'),
                     'type'        => 'text',
                     'description' => __('The payment method description which a customer sees at the checkout of your store.', 'zaprite-for-woocommerce'),
-                    'default'     => __('Powered by Zaprite.', 'zaprite-for-woocommerce'),
-                    'disabled'    => true,
+                    'placeholder' => __('Powered by Zaprite', 'zaprite-for-woocommerce'),
+                    'default'     => __('Powered by Zaprite', 'zaprite-for-woocommerce'),
+                    'disabled'    => __(true, 'zaprite-for-woocommerce'),
                 ),
                 'payment_image'                 => array(
                     'title'       => __('Show checkout Image', 'zaprite-for-woocommerce'),
+                    'label'       => __('Show Zaprite image on checkout', 'zaprite-for-woocommerce'),
                     'type'        => 'checkbox',
-                    'description' => 'Show Zaprite logo on checkout',
-                    'default'     => 'yes',
+                    'description' => Utils::get_icon_image_html(),
+                    'default'     =>  __('yes', 'zaprite-for-woocommerce'),
                 ),
                 'zaprite_statement_descriptor'  => array(
                     'title'       => __('Statement Descriptor', 'zaprite-for-woocommerce'),
@@ -158,7 +155,7 @@ function zaprite_server_init()
                     'description' => __('Enter the Zaprite API Key from your <a href="https://app.zaprite.com/connections/woo" target="_blank" rel="noopener noreferrer">WooCommerce plugin settings</a> page.', 'zaprite-for-woocommerce'),
                     'type'        => 'text',
                     'default'     => '',
-                )
+                ),
             );
         }
 
@@ -424,7 +421,6 @@ function zaprite_server_init()
         add_action('http_api_curl', 'zaprite_server_http_api_curl', 100, 1);
         add_action('init', 'add_custom_order_status');
         add_filter('wc_order_statuses', 'add_custom_order_statuses');
-
 
     }
 

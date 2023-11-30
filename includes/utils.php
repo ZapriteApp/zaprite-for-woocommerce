@@ -37,6 +37,21 @@ class Utils {
         }
         return $wooStatus;
     }
+
+    public static function get_icon_image_url() {
+        $images_url   = WC_PAYMENT_GATEWAY_ZAPRITE_ASSETS . '/images/';
+        $icon_file   = 'zaprite-icon@2x.png';
+        $icon_style  = 'style="max-height: 44px !important;max-width: none !important;"';
+        $icon_url   = $images_url . $icon_file;
+        return $icon_url;
+    }
+
+    public static function get_icon_image_html() {
+        $icon_url = Utils::get_icon_image_url();
+        $icon_style  = 'style="max-height: 44px !important;max-width: none !important;"';
+        $icon_html  = '<img src="' . $icon_url . '" alt="Zaprite logo" ' . $icon_style . ' />';
+        return $icon_html;
+    }
 }
 
 class CurlWrapper {
