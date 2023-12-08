@@ -7,7 +7,7 @@ namespace ZapritePlugin;
 class API {
 
     protected $api_key;
-    protected $zaprite_url = (ZAPRITE_ENV == 'dev') ? ZAPRITE_DEV_PATH : ZAPRITE_PATH;
+    protected $zaprite_url = ZAPRITE_PATH;
 
     public function __construct($api_key) {
         $this->api_key = $api_key;
