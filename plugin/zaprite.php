@@ -47,6 +47,8 @@ function zaprite_server_init()
 
     // Defined here, because it needs to be defined after WC_Payment_Gateway is already loaded.
     class WC_Gateway_Zaprite_Server extends WC_Payment_Gateway {
+        public $api;
+        
         public function __construct()
         {
             global $woocommerce;
