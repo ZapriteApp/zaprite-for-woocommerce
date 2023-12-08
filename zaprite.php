@@ -238,20 +238,26 @@ function zaprite_server_init()
          */
         public function check_payment()
         {
-            $order_id = wc_get_order_id_by_order_key($_REQUEST['key']);
-            $order        = wc_get_order($order_id);
-            $r = $this->api->checkCharge($order_id);
-            if ($r['status'] == 200) {
-                if ($r['response']['paid'] == true) {
-                    $order->update_status('processing', 'Order status updated via API.', true);
-                    $order->add_order_note('Payment completed (checkout).');
-                    $order->payment_complete();
-                    $order->save();
-                    error_log("ZAPRITE: check_payment paid true!!!");
+            try {
+                $order_id = wc_get_order_id_by_order_key($_REQUEST['key']);
+                $order        = wc_get_order($order_id);
+                $r = $this->api->checkCharge($order_id);
+                if ($r['status'] == 200) {
+                    if ($r['response']['paid'] == true) {
+                        $order->update_status('processing', 'Order status updated via API.', true);
+                        $order->add_order_note('Payment completed (checkout).');
+                        $order->payment_complete();
+                        $order->save();
+                        error_log("ZAPRITE: check_payment paid true!!!");
+                    }
+                } else {
+                    // handle non 200 response status
+                    die();
                 }
-            } else {
-                // handle non 200 response status
+            } catch(Exception $e) {
+                die(get_class($e) . ': ' . $e->getMessage());
             }
+
         }
 
     }
