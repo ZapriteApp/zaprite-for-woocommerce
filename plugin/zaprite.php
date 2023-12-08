@@ -347,7 +347,7 @@ function zaprite_server_init()
         // Settings Link
         function zaprite_add_settings_link($links) {
             $settings_link = '<a href="' . admin_url('admin.php?page=wc-settings&tab=checkout&section=zaprite') . '">' . __('Settings', 'zaprite-for-woocommerce') . '</a>';
-            array_push($links, $settings_link);
+            array_unshift($links, $settings_link);
             return $links;
         }
 
