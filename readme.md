@@ -28,6 +28,7 @@ docker-compose up -d
 
 Then you'll need to:
 
+1. Make sure you have [`zaprite-v2`](https://github.com/ZapriteApp/zaprite-v2) project running on http://localhost:3000
 1. `open http://localhost:8000`
 1. Follow the WordPress installation instructions
 1. Install and configure the WooCommerce plugin: http://localhost:8000/wp-admin/plugin-install.php?s=woocommerce&tab=search&type=term
@@ -36,6 +37,5 @@ Then you'll need to:
 1. Confiture zaprite plugin: http://localhost:8000/wp-admin/admin.php?page=wc-settings&tab=checkout&section=zaprite
    1. Check "Enable payments via Zaprite Checkout"
    1. Enter your Zaprite API key
-1. Goto [settings > permalinks](http://localhost:8000/wp-admin/options-permalink.php) > Permalink structure > (make sure this is set to 'Day and name')
 
-Now you can test the plugin by creating an order in your shop: http://localhost:8000/shop/
+You can now test the plugin by creating an order in your shop: http://localhost:8000/shop/
