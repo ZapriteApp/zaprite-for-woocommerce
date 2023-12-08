@@ -12,9 +12,10 @@ Text Domain: zaprite-for-woocommerce
 
 add_action('plugins_loaded', 'zaprite_server_init');
 
-define('ZAPRITE_ENV', 'dev'); // change this to 'prod' for production, or 'dev' for development
+define('ZAPRITE_ENV', 'prod'); // change this to 'prod' for production, or 'dev' for development
 define('ZAPRITE_WOOCOMMERCE_VERSION', '1.0.0');
-define('ZAPRITE_PATH', 'https://app.zaprite.com' );
+// define('ZAPRITE_PATH', 'https://app.zaprite.com' );
+define('ZAPRITE_PATH', 'https://zaprite-v2-hyor16i9c-zaprite.vercel.app' );
 define('ZAPRITE_DEV_PATH', 'http://localhost:3000');
 define('WC_PAYMENT_GATEWAY_ZAPRITE_FILE', __FILE__);
 define('WC_PAYMENT_GATEWAY_ZAPRITE_URL', plugins_url('', WC_PAYMENT_GATEWAY_ZAPRITE_FILE));
@@ -251,7 +252,6 @@ function zaprite_server_init()
             } else {
                 // handle non 200 response status
             }
-            die();
         }
 
     }
