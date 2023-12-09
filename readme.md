@@ -17,6 +17,8 @@ _In order to use this plugin you have to create an account on [https://zaprite.c
 
 ## Local development
 
+### With Docker
+
 To develop locally, you can run wordpress locally with docker. This will run wordpress on port 8000 with debugging enabled. It will also mount your local `./plugin` directly in the wordpress `plugins`` directory so that you can edit and see the result of your changes directly in wordpress.
 
 First, you'll need to run the docker containers:
@@ -39,3 +41,13 @@ Then you'll need to:
    1. Enter your Zaprite API key
 
 You can now test the plugin by creating an order in your shop: http://localhost:8000/shop/
+
+### Without Docker
+
+If you prefer using another way to run Wordpress locally, like [Local by Flywheel](https://localwp.com/), you can clone this git repo anywhere you want then just create a symlink to the `plugin` directory:
+
+```
+ln -s <path to the cloned repo>/zaprite-for-woocommerce/plugin <path to local wordpress>/wp-content/plugins/zaprite-payment-gateway
+```
+
+Also make sure you turn on debugging: Edit the `wp-config.php` File. Look for the line that says `define('WP_DEBUG', false);`. If it's not there, you'll need to add it. And change it to true. Then restart your site. This should create a debug.log file in `wp-content`
