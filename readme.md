@@ -50,4 +50,10 @@ If you prefer using another way to run Wordpress locally, like [Local by Flywhee
 ln -s <path to the cloned repo>/zaprite-for-woocommerce/plugin <path to local wordpress>/wp-content/plugins/zaprite-payment-gateway
 ```
 
+Currenly there is no way to manage env variables if you use Locals by Flywheel, and there appears to be timing issues if you use the wp-config.php file. So to test locally edit `zaprite.php`
+```php
+define('ZAPRITE_PATH', getenv('ZAPRITE_PATH') ?: 'http://localhost:3000' );
+```
+
+
 Also make sure you turn on debugging: Edit the `wp-config.php` File. Look for the line that says `define('WP_DEBUG', false);`. If it's not there, you'll need to add it. And change it to true. Then restart your site. This should create a debug.log file in `wp-content`
