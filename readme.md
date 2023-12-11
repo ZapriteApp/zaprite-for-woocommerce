@@ -1,5 +1,4 @@
-Zaprite Extension for Woo
-=========================
+# Zaprite Extension for Woo
 
 **Accept Bitcoin and Lightning**
 
@@ -7,7 +6,7 @@ Start accepting Bitcoin and Lightning today. Powered by Zaprite
 
 This plugin allows stores that use Wordpress WooCommerce shopping cart system to accept Bitcoin and Bitcoin through Lightning Network via Zaprite.
 
-*In order to use this plugin you have to create an account on [https://zaprite.com](https://zaprite.com)*
+_In order to use this plugin you have to create an account on [https://zaprite.com](https://zaprite.com)_
 
 ## Installation
 
@@ -18,23 +17,43 @@ This plugin allows stores that use Wordpress WooCommerce shopping cart system to
 
 ## Local development
 
-To develop locally
+### With Docker
 
-1. Download and install Local by Flywheel here: https://localwp.com/
-2. Create a wordpress site and install the Woocommerce plugin
-3. Goto settings > permalinks > Permalink structure	> (make sure this is set to 'Day and name')
-4. Before cloning this repo we want to make sure you are in the working directory for the workpress plugins.
-To get the directory goto "Local by Flywheel" and click "Open in shell" at the top. The plugin directory should be at `app/public/wp-content/plugins`.
-5. `cd wp-content/plugins`
-6. Then run `git clone https://github.com/ZapriteApp/zaprite-for-woocommerce.git`
-7. In the file `zaprite.php` edit this code at the top with your settings
+To develop locally, you can run wordpress locally with docker. This will run wordpress on port 8000 with debugging enabled. It will also mount your local `./plugin` directly in the wordpress `plugins` directory so that you can edit and see the result of your changes directly in wordpress.
+
+First, you'll need to run the docker containers:
+
 ```
-define('ZAPRITE_ENV', 'dev');
-define('ZAPRITE_DEV_PATH', 'http://localhost:3000');
+cd wordpress-docker
+docker-compose up -d
 ```
-8. In wordpress admin dashboard `http://yoursite.local/wp-admin` goto plugin > installed plugins > make sure Zaprite is activated
-9. goto woocommerce > settings > Payments > enable and configure Zaprite
-10. Make sure to get Zaprite api key from http://localhost:3000/org/{YOUR_ORG_ID}/connections/woo
-11. To turn on debugging Edit the `wp-config.php` File. Look for the line that says `define('WP_DEBUG', false);`. If it's not there, you'll need to add it. And change it to true.
-12. Then restart your site. This should create a debug.log file in `wp-content`
-13. Now you can test the plugin by creating an order in your shop.
+
+Then you'll need to:
+
+1. Make sure you have [`zaprite-v2`](https://github.com/ZapriteApp/zaprite-v2) project running on http://localhost:3000
+1. `open http://localhost:8000`
+1. Follow the WordPress installation instructions
+1. Install and configure the WooCommerce plugin: http://localhost:8000/wp-admin/plugin-install.php?s=woocommerce&tab=search&type=term
+1. Add a product in woo commerce so that you can test payments
+1. Activate Zaprite plugin: http://localhost:8000/wp-admin/plugins.php
+1. Configure zaprite plugin: http://localhost:8000/wp-admin/admin.php?page=wc-settings&tab=checkout&section=zaprite
+   1. Check "Enable payments via Zaprite Checkout"
+   1. Enter your Zaprite API key
+
+You can now test the plugin by creating an order in your shop: http://localhost:8000/shop/
+
+### Without Docker
+
+If you prefer using another way to run Wordpress locally, like [Local by Flywheel](https://localwp.com/), you can clone this git repo anywhere you want then just create a symlink to the `plugin` directory:
+
+```
+ln -s <path to the cloned repo>/zaprite-for-woocommerce/plugin <path to local wordpress>/wp-content/plugins/zaprite-payment-gateway
+```
+
+Currenly there is no way to manage env variables if you use Locals by Flywheel, and there appears to be timing issues if you use the wp-config.php file. So to test locally edit `zaprite.php`
+```php
+define('ZAPRITE_PATH', getenv('ZAPRITE_PATH') ?: 'http://localhost:3000' );
+```
+
+
+Also make sure you turn on debugging: Edit the `wp-config.php` File. Look for the line that says `define('WP_DEBUG', false);`. If it's not there, you'll need to add it. And change it to true. Then restart your site. This should create a debug.log file in `wp-content`

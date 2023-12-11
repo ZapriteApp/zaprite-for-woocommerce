@@ -12,11 +12,10 @@ Text Domain: zaprite-for-woocommerce
 
 add_action('plugins_loaded', 'zaprite_server_init');
 
-define('ZAPRITE_ENV', 'prod'); // change this to 'prod' for production, or 'dev' for development
+define('ZAPRITE_PATH', getenv('ZAPRITE_PATH') ?: 'https://app.zaprite.com' );
+
 define('ZAPRITE_WOOCOMMERCE_VERSION', '1.0.0');
-// define('ZAPRITE_PATH', 'https://app.zaprite.com' );
-define('ZAPRITE_PATH', 'https://zaprite-v2-hyor16i9c-zaprite.vercel.app' );
-define('ZAPRITE_DEV_PATH', 'http://localhost:3000');
+
 define('WC_PAYMENT_GATEWAY_ZAPRITE_FILE', __FILE__);
 define('WC_PAYMENT_GATEWAY_ZAPRITE_URL', plugins_url('', WC_PAYMENT_GATEWAY_ZAPRITE_FILE));
 define('WC_PAYMENT_GATEWAY_ZAPRITE_ASSETS', WC_PAYMENT_GATEWAY_ZAPRITE_URL . '/assets');
@@ -48,6 +47,8 @@ function zaprite_server_init()
 
     // Defined here, because it needs to be defined after WC_Payment_Gateway is already loaded.
     class WC_Gateway_Zaprite_Server extends WC_Payment_Gateway {
+        public $api;
+        
         public function __construct()
         {
             global $woocommerce;
@@ -153,7 +154,7 @@ function zaprite_server_init()
                 ),
                 'zaprite_api_key'               => array(
                     'title'       => __('Zaprite API Key', 'zaprite-for-woocommerce'),
-                    'description' => __('Enter the Zaprite API Key from your <a href="https://app.zaprite.com/connections/woo" target="_blank" rel="noopener noreferrer">WooCommerce plugin settings</a> page.', 'zaprite-for-woocommerce'),
+                    'description' => __('Enter the Zaprite API Key from your <a href="https://app.zaprite.com/org/default/connections" target="_blank" rel="noopener noreferrer">WooCommerce plugin settings</a> page.', 'zaprite-for-woocommerce'),
                     'type'        => 'text',
                     'default'     => '',
                 ),
@@ -179,7 +180,7 @@ function zaprite_server_init()
          */
         public function process_payment($order_id)
         {
-            $zaprite_url =  (ZAPRITE_ENV == 'dev') ? ZAPRITE_DEV_PATH : ZAPRITE_PATH;
+            $zaprite_url = ZAPRITE_PATH;
 
             error_log("ZAPRITE: process_payment");
             $order = wc_get_order($order_id);
@@ -347,7 +348,7 @@ function zaprite_server_init()
         // Settings Link
         function zaprite_add_settings_link($links) {
             $settings_link = '<a href="' . admin_url('admin.php?page=wc-settings&tab=checkout&section=zaprite') . '">' . __('Settings', 'zaprite-for-woocommerce') . '</a>';
-            array_push($links, $settings_link);
+            array_unshift($links, $settings_link);
             return $links;
         }
 
