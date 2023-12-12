@@ -37,7 +37,8 @@ class API {
             "currency" => $currency,
             "orderUpdateCallback" => $orderUpdateCallback,
             "redirectUrl" => $completelink,
-            "externalOrderId" => "$order_id"
+            "externalOrderId" => "$order_id",
+            "externalUniqId" => $key,
         ];
         $response = $c->post("$this->zaprite_url/api/public/woo/create-order", array(), json_encode($data), $headers);
         error_log("Send invoice status ===>" . $response['status'] );
