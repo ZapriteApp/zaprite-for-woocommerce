@@ -48,7 +48,7 @@ function zaprite_server_init()
     // Defined here, because it needs to be defined after WC_Payment_Gateway is already loaded.
     class WC_Gateway_Zaprite_Server extends WC_Payment_Gateway {
         public $api;
-        
+
         public function __construct()
         {
             global $woocommerce;
@@ -211,8 +211,10 @@ function zaprite_server_init()
                 $order->add_meta_data('zaprite_order_link', "$zaprite_url/_domains/pay/order/$order_id", true);
                 $order->save();
                 $callback = base64_encode($order->get_checkout_order_received_url());
-                $redirect_url = "$zaprite_url/_domains/pay/order/$order_id";
-
+                $checkout_page_id = get_option('woocommerce_checkout_page_id');
+                $checkout_page_url = get_permalink($checkout_page_id);
+                $backUrl = urlencode($checkout_page_url);
+                $redirect_url = "$zaprite_url/_domains/pay/order/$order_id?backUrl=$backUrl";
                 return array(
                     "result"   => "success",
                     "redirect" => $redirect_url
