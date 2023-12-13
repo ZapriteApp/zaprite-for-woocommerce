@@ -13,7 +13,7 @@ class API {
         $this->api_key = $api_key;
     }
 
-    public function createCharge($amount, $currency, $memo, $order_id) {
+    public function createCharge($amount, $currency, $transaction_memo, $order_id) {
 
         error_log("ZAPRITE: URL $this->zaprite_url");
 
@@ -39,6 +39,7 @@ class API {
             "redirectUrl" => $completelink,
             "externalOrderId" => "$order_id",
             "externalUniqId" => $key,
+            "transactionMemo" => $transaction_memo
         ];
         $response = $c->post("$this->zaprite_url/api/public/woo/create-order", array(), json_encode($data), $headers);
         error_log("Send invoice status ===>" . $response['status'] );

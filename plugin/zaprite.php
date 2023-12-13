@@ -48,6 +48,7 @@ function zaprite_server_init()
     // Defined here, because it needs to be defined after WC_Payment_Gateway is already loaded.
     class WC_Gateway_Zaprite_Server extends WC_Payment_Gateway {
         public $api;
+        public $transaction_memo;
 
         public function __construct()
         {
@@ -68,6 +69,7 @@ function zaprite_server_init()
             $api_key   = $this->get_option('zaprite_api_key');
 
             $this->api = new API($api_key);
+            $this->transaction_memo = $this->get_option('zaprite_statement_descriptor');
 
             if ($this->get_option('payment_image') == 'yes') {
                 $this->icon = Utils::get_icon_image_url();
@@ -116,6 +118,7 @@ function zaprite_server_init()
          */
         public function init_form_fields()
         {
+            $zaprite_path = ZAPRITE_PATH;
             // echo("init_form_fields");
             $this->form_fields = array(
                 'enabled'                       => array(
@@ -154,7 +157,7 @@ function zaprite_server_init()
                 ),
                 'zaprite_api_key'               => array(
                     'title'       => __('Zaprite API Key', 'zaprite-for-woocommerce'),
-                    'description' => __('Enter the Zaprite API Key from your <a href="https://app.zaprite.com/org/default/connections" target="_blank" rel="noopener noreferrer">WooCommerce plugin settings</a> page.', 'zaprite-for-woocommerce'),
+                    'description' => __("Enter the Zaprite API Key from your <a href='$zaprite_path/org/default/connections' target='_blank' rel='noopener noreferrer'>WooCommerce plugin settings</a> page.", "zaprite-for-woocommerce"),
                     'type'        => 'text',
                     'default'     => '',
                 ),
@@ -185,9 +188,7 @@ function zaprite_server_init()
             error_log("ZAPRITE: process_payment");
             $order = wc_get_order($order_id);
 
-            // This will be stored in the invoice (ie. can be used to match orders in Zaprite)
-            $memo = get_bloginfo('name') . " Order #" . $order->get_id() . " Total=" . $order->get_total() . get_woocommerce_currency();
-
+            $transaction_memo = $this->transaction_memo;
             $amount =$order->get_total();
             $currency = $order->get_currency();
             // error_log(print_r($order, true));
@@ -195,7 +196,7 @@ function zaprite_server_init()
             error_log("ZAPRITE: currency in smallest unit $total_in_smallest_unit $currency");
 
             // Call the Zaprite public api to create the invoice
-            $r = $this->api->createCharge($total_in_smallest_unit, $currency, $memo, $order_id);
+            $r = $this->api->createCharge($total_in_smallest_unit, $currency, $transaction_memo, $order_id);
 
             if ($r['status'] === 200) {
                 $resp = $r['response'];
