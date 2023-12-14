@@ -13,7 +13,7 @@ class API {
         $this->api_key = $api_key;
     }
 
-    public function createCharge($amount, $currency, $memo, $order_id) {
+    public function createCharge($amount, $currency, $order_id) {
 
         error_log("ZAPRITE: URL $this->zaprite_url");
 
