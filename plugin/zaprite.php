@@ -1,4 +1,5 @@
 <?php
+use Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry;
 
 /*
 Plugin Name: Zaprite Payment Gateway for WooCommerce
@@ -9,6 +10,8 @@ Author: Zaprite
 Author URI: https://zaprite.com
 Text Domain: zaprite-for-woocommerce
 */
+
+include_once(__DIR__ . '/includes/blocks-checkout.php');
 
 add_action('plugins_loaded', 'zaprite_server_init');
 
@@ -449,6 +452,14 @@ function zaprite_server_init()
         add_action('http_api_curl', 'zaprite_server_http_api_curl', 100, 1);
         add_action('init', 'add_custom_order_status');
         add_filter('wc_order_statuses', 'add_custom_order_statuses');
+
+        add_action(
+            'woocommerce_blocks_payment_method_type_registration',
+            function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
+                error_log("ZAPRITE: PaymentMethodRegistry");
+                $payment_method_registry->register( new WC_Gateway_Zaprite_Blocks_Support() );
+            }
+        );
 
     }
 

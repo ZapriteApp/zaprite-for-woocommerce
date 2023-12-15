@@ -1,0 +1,113 @@
+# Copyright (C) 2023 Zaprite
+# This file is distributed under the same license as the Zaprite Payment Gateway for WooCommerce plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Zaprite Payment Gateway for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/plugin\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2023-12-15T04:02:23+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.9.0\n"
+"X-Domain: zaprite-for-woocommerce\n"
+
+#. Plugin Name of the plugin
+msgid "Zaprite Payment Gateway for WooCommerce"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://github.com/ZapriteApp/zaprite-for-woocommerce"
+msgstr ""
+
+#. Description of the plugin
+msgid "Accept bitcoin (on-chain and lightning) and fiat payments in one unified Zaprite Checkout."
+msgstr ""
+
+#. Author of the plugin
+#: zaprite.php:98
+msgid "Zaprite"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://zaprite.com"
+msgstr ""
+
+#: zaprite.php:62
+msgid "Bitcoin payments made easy. Accept on-chain, lightning and fiat payments in one unified Zaprite Checkout experience."
+msgstr ""
+
+#: zaprite.php:99
+msgid ""
+"\n"
+"                <p>\n"
+"                    Accept bitcoin (on-chain and lightning) and fiat payments instantly through your\n"
+"                    hosted Zaprite Checkout. First, enable the WooCommerce extension on Zaprite Connections\n"
+"                    page and configure your preferred Checkout. Finally, copy the API Key shown into the field below.\n"
+"                </p>\n"
+"                <p>\n"
+"                    <a href='https://blog.zaprite.com/integrating-zaprite-with-woocommerce' target='_blank' rel='noreferrer'>\n"
+"                        Setup Guide\n"
+"                    </a>\n"
+"                </p>\n"
+"                "
+msgstr ""
+
+#: zaprite.php:125
+msgid "Enable Zaprite Payments"
+msgstr ""
+
+#: zaprite.php:126
+msgid "Enable payments via Zaprite Checkout."
+msgstr ""
+
+#: zaprite.php:132
+msgid "Payment Method Name"
+msgstr ""
+
+#: zaprite.php:134
+msgid "The payment method title which a customer sees at the checkout of your store."
+msgstr ""
+
+#: zaprite.php:135
+msgid "Checkout with Zaprite"
+msgstr ""
+
+#: zaprite.php:138
+msgid "Description"
+msgstr ""
+
+#: zaprite.php:140
+msgid "The payment method description which a customer sees at the checkout of your store."
+msgstr ""
+
+#: zaprite.php:141
+#: zaprite.php:142
+msgid "Powered by Zaprite"
+msgstr ""
+
+#: zaprite.php:146
+msgid "Show checkout Image"
+msgstr ""
+
+#: zaprite.php:147
+msgid "Show Zaprite image on checkout"
+msgstr ""
+
+#: zaprite.php:150
+msgid "yes"
+msgstr ""
+
+#: zaprite.php:153
+msgid "Zaprite API Key"
+msgstr ""
+
+#: zaprite.php:374
+msgid "Settings"
+msgstr ""
+
+#: zaprite.php:385
+msgid "Setup Guide"
+msgstr ""

@@ -57,3 +57,21 @@ define('ZAPRITE_PATH', getenv('ZAPRITE_PATH') ?: 'http://localhost:3000' );
 
 
 Also make sure you turn on debugging: Edit the `wp-config.php` File. Look for the line that says `define('WP_DEBUG', false);`. If it's not there, you'll need to add it. And change it to true. Then restart your site. This should create a debug.log file in `wp-content`
+
+Block Checkout
+=============
+
+If you want to edit the UI for the Blocks checkout you need to
+compile the javascript code:
+
+1. cd plugin
+2. `npm i`
+3. `npm run build`
+4. `npm run start`
+5. This will run webpack and generate files to `assets/js/frontend/blocks.js` and `assets/js/frontend/blocks_assets.php`. After you see success `webpack 5.89.0 compiled successfully in 27 ms` and can cntl+x
+6. Now you can use the plugin like normal
+7. If you want to update the javascript/html for the payment checkout UI then modify `resources/js/frontend/index.js` and run `npm run start`
+
+** if you get errors with php `composer` you might have to install it via `brew install composer`
+
+Docs: https://github.com/woocommerce/woocommerce-gateway-dummy
