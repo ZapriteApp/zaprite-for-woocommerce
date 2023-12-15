@@ -116,7 +116,7 @@ function zaprite_server_init()
          */
         public function init_form_fields()
         {
-            // echo("init_form_fields");
+            $zaprite_path = ZAPRITE_PATH;
             $this->form_fields = array(
                 'enabled'                       => array(
                     'title'       => __('Enable Zaprite Payments', 'zaprite-for-woocommerce'),
@@ -146,15 +146,9 @@ function zaprite_server_init()
                     'description' => Utils::get_icon_image_html(),
                     'default'     =>  __('yes', 'zaprite-for-woocommerce'),
                 ),
-                'zaprite_statement_descriptor'  => array(
-                    'title'       => __('Statement Descriptor', 'zaprite-for-woocommerce'),
-                    'type'        => 'text',
-                    'description' => __('This note will be visible to your customer in the statements and transaction history of their payment account.', 'zaprite-for-woocommerce'),
-                    'default'     => sprintf(__('Payment to %s', 'zaprite-for-woocommerce'), get_bloginfo('name')),
-                ),
                 'zaprite_api_key'               => array(
                     'title'       => __('Zaprite API Key', 'zaprite-for-woocommerce'),
-                    'description' => __('Enter the Zaprite API Key from your <a href="https://app.zaprite.com/org/default/connections" target="_blank" rel="noopener noreferrer">WooCommerce plugin settings</a> page.', 'zaprite-for-woocommerce'),
+                    'description' => __("Enter the Zaprite API Key from your <a href='$zaprite_path/org/default/connections' target='_blank' rel='noopener noreferrer'>WooCommerce plugin settings</a> page.", "zaprite-for-woocommerce"),
                     'type'        => 'text',
                     'default'     => '',
                 ),
@@ -184,10 +178,6 @@ function zaprite_server_init()
 
             error_log("ZAPRITE: process_payment");
             $order = wc_get_order($order_id);
-
-            // This will be stored in the invoice (ie. can be used to match orders in Zaprite)
-            $memo = get_bloginfo('name') . " Order #" . $order->get_id() . " Total=" . $order->get_total() . get_woocommerce_currency();
-
             $amount =$order->get_total();
             $currency = $order->get_currency();
             // error_log(print_r($order, true));
@@ -195,7 +185,7 @@ function zaprite_server_init()
             error_log("ZAPRITE: currency in smallest unit $total_in_smallest_unit $currency");
 
             // Call the Zaprite public api to create the invoice
-            $r = $this->api->createCharge($total_in_smallest_unit, $currency, $memo, $order_id);
+            $r = $this->api->createCharge($total_in_smallest_unit, $currency, $order_id);
 
             if ($r['status'] === 200) {
                 $resp = $r['response'];
@@ -208,7 +198,7 @@ function zaprite_server_init()
 
                 // save zaprite metadata in woocommerce
                 $order->add_meta_data('zaprite_order_id', $order_id, true);
-                $order->add_meta_data('zaprite_order_link', "$zaprite_url/_domains/pay/order/$order_id", true);
+                $order->add_meta_data('zaprite_order_link', "$zaprite_url/order/$order_id", true);
                 $order->save();
                 $callback = base64_encode($order->get_checkout_order_received_url());
                 $checkout_page_id = get_option('woocommerce_checkout_page_id');
@@ -289,23 +279,49 @@ function zaprite_server_init()
                     array( 'status' => 500 )
                 );
             }
-            $order = wc_get_order($order_id);
 
+            $order = wc_get_order($order_id);
             // check keys
             $keyToCheck = $data->get_param('key');
             $key = $order->get_order_key(); // key from the order database
 
-            if ($key == $keyToCheck) {
-                // check status
-                $status = $orderStatusRes['response']['status']; // processing (aka paid), underpaid, overpaid or btc-pending
-                error_log("ZAPRITE: order status update from zaprite api - $status");
-                $wooStatus = Utils::convert_zaprite_order_status_to_woo_status($status);
-                error_log("ZAPRITE: wooStatus - $wooStatus");
-                if ($wooStatus == "") {
-                    return new WP_REST_Response('Invalid order status.', 400);
-                }
-                if($wooStatus == "processing") {
+            if ($key !== $keyToCheck) {
+                return new WP_Error(
+                    'unauthorized_access',
+                    'Unauthorized access - keys do not match',
+                    array( 'status' => 401 )
+                );
+            }
+
+            // check status
+            $status = $orderStatusRes['response']['status'];
+            error_log("ZAPRITE: order status update from zaprite api - $status");
+            $wooStatus = Utils::convert_zaprite_order_status_to_woo_status($status);
+            error_log("ZAPRITE: wooStatus - $wooStatus");
+
+            switch ($wooStatus) {
+                case 'processing':
                     $order->add_order_note('Payment is settled.');
+                    // check if fiat premium was applied, if so, save to custom data in woo
+                    $paidPremium = $orderStatusRes['response']['paidPremium'];
+                    $paidPremiumCurrency = $orderStatusRes['response']['paidPremiumCurrency'];
+                    $paidPremiumPercent = $orderStatusRes['response']['paidPremiumPercent'];
+                    if ($paidPremium) {
+                        // add fee to order
+                        $item_fee = new WC_Order_Item_Fee();
+                        $item_fee->set_name("Fiat Premium Fee");
+                        $item_fee->set_amount($paidPremium);
+                        $item_fee->set_tax_class( '' ); // or 'standard' if the fee is taxable
+                        $item_fee->set_tax_status( 'none' ); // or 'taxable'
+                        $item_fee->set_total($paidPremium); // The total amount of the fee
+                        $order->add_item( $item_fee );
+                        // Calculate totals and save the order
+                        $order->calculate_totals();
+                        $order->add_meta_data('zaprite_fiat_premium_extra_paid_amount', $paidPremium, true);
+                        $order->add_meta_data('zaprite_fiat_premium_extra_paid_currency', $paidPremiumCurrency, true);
+                        $order->add_meta_data('zaprite_fiat_premium_extra_paid_percent', $paidPremiumPercent, true);
+                        $order->save();
+                    }
                     $order->payment_complete();
                     $order->save();
                     error_log("PAID");
@@ -314,21 +330,24 @@ function zaprite_server_init()
                         'redirect' => $order->get_checkout_order_received_url(),
                         'paid'     => true
                     )));
-                } else if ($wooStatus == "pending") {
-                    // do nothing
-                } else {
+                    break;
+                case 'wc-btc-pending':
+                case 'wc-overpaid':
+                case 'wc-underpaid':
+                    // update status
                     $order->update_status($wooStatus, 'Order status updated via API.', true);
                     $order->save();
                     error_log("ZAPRITE: update status - $wooStatus");
-                }
-                return new WP_REST_Response('Order status updated.', 200);
-            } else {
-                return new WP_Error(
-                    'unauthorized_access',
-                    'Unauthorized access - keys do not match',
-                    array( 'status' => 401 )
-                );
+                    break;
+                case 'pending':
+                    // do nothing
+                    break;
+                default:
+                    return new WP_REST_Response('Invalid order status.', 400);
+                    break;
+
             }
+            return new WP_REST_Response('Order status updated.', 200);
         }
         add_action("rest_api_init", function () {
             error_log("ZAPRITE: rest_api_init zaprite");

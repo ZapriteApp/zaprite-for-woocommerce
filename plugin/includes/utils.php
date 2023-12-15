@@ -8,34 +8,24 @@ class Utils {
         // Convert the total to the smallest unit
         return $amount * pow(10, $decimals);
     }
-    public static function convert_zaprite_order_status_to_woo_status($status) {
-        $zapriteStatus = strtolower($status);
-        $wooStatus = "";
-
-        // convert zaprite to woo status
+    // convert zaprite to woo status
+    public static function convert_zaprite_order_status_to_woo_status($zapriteStatus) {
         switch ($zapriteStatus) {
-            case 'pending':
-                $wooStatus = "pending"; // do nothing
-                break;
-            case 'processing':
-                $wooStatus = "wc-btc-pending";
-                break;
-            case 'paid':
-                $wooStatus = "processing"; // its paid on zaprite but still processing to be shipped on woo
-                break;
-            case 'overpaid':
-                $wooStatus = "wc-overpaid";
-                break;
-            case 'underpaid':
-                $wooStatus = "wc-underpaid";
-                break;
-            case 'complete':
-                $wooStatus = "processing"; // its completed on zaprite but still processing to be shipped on woo
-                break;
+            case 'PENDING':
+                return "pending"; // do nothing
+            case 'PROCESSING':
+                return "wc-btc-pending";
+            case 'COMPLETE':
+            case 'PAID':
+                return "processing"; // its paid or complete on zaprite but still processing to be shipped on woo
+            case 'OVERPAID':
+                return "wc-overpaid";
+            case 'UNDERPAID':
+                return "wc-underpaid";
             default:
-
+                // maybe it would be best to throw an exception here
+                return '';
         }
-        return $wooStatus;
     }
 
     public static function get_icon_image_url() {
