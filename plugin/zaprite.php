@@ -198,7 +198,7 @@ function zaprite_server_init()
 
                 // save zaprite metadata in woocommerce
                 $order->add_meta_data('zaprite_order_id', $order_id, true);
-                $order->add_meta_data('zaprite_order_link', "$zaprite_url/org/default/orders/$order_id", true);
+                $order->add_meta_data('zaprite_order_link', "$zaprite_url/order/$order_id", true);
                 $order->save();
                 $callback = base64_encode($order->get_checkout_order_received_url());
                 $checkout_page_id = get_option('woocommerce_checkout_page_id');
