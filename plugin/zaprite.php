@@ -294,15 +294,12 @@ function zaprite_server_init()
             }
 
             // check status
-            $status = $orderStatusRes['response']['status']; // processing (aka paid), underpaid, overpaid or btc-pending
+            $status = $orderStatusRes['response']['status'];
             error_log("ZAPRITE: order status update from zaprite api - $status");
             $wooStatus = Utils::convert_zaprite_order_status_to_woo_status($status);
             error_log("ZAPRITE: wooStatus - $wooStatus");
 
             switch ($wooStatus) {
-                case '':
-                    return new WP_REST_Response('Invalid order status.', 400);
-                    break;
                 case 'processing':
                     $order->add_order_note('Payment is settled.');
                     // check if fiat premium was applied, if so, save to custom data in woo
@@ -334,15 +331,21 @@ function zaprite_server_init()
                         'paid'     => true
                     )));
                     break;
-                case 'pending':
-                    // do nothing
-                    break;
-                default:
+                case 'wc-btc-pending':
+                case 'wc-overpaid':
+                case 'wc-underpaid':
                     // update status
                     $order->update_status($wooStatus, 'Order status updated via API.', true);
                     $order->save();
                     error_log("ZAPRITE: update status - $wooStatus");
                     break;
+                case 'pending':
+                    // do nothing
+                    break;
+                default:
+                    return new WP_REST_Response('Invalid order status.', 400);
+                    break;
+
             }
             return new WP_REST_Response('Order status updated.', 200);
         }
