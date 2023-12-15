@@ -15,7 +15,7 @@ include_once(__DIR__ . '/includes/blocks-checkout.php');
 
 add_action('plugins_loaded', 'zaprite_server_init');
 
-define('ZAPRITE_PATH', getenv('ZAPRITE_PATH') ?: 'http://localhost:3000' );
+define('ZAPRITE_PATH', getenv('ZAPRITE_PATH') ?: 'https://app.zaprite.com' );
 
 define('ZAPRITE_WOOCOMMERCE_VERSION', '1.0.0');
 
