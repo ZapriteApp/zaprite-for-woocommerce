@@ -306,9 +306,9 @@ function zaprite_server_init()
                 case 'processing':
                     $order->add_order_note('Payment is settled.');
                     // check if fiat premium was applied, if so, save to custom data in woo
-                    $paidPremium = $data->get_param('paidPremium');
-                    $paidPremiumCurrency = $data->get_param('paidPremiumCurrency');
-                    $paidPremiumPercent = $data->get_param('paidPremiumPercent');
+                    $paidPremium = $orderStatusRes['response']['paidPremium'];
+                    $paidPremiumCurrency = $orderStatusRes['response']['paidPremiumCurrency'];
+                    $paidPremiumPercent = $orderStatusRes['response']['paidPremiumPercent'];
                     if ($paidPremium) {
                         // add fee to order
                         $item_fee = new WC_Order_Item_Fee();
