@@ -8,6 +8,13 @@ class Utils {
         // Convert the total to the smallest unit
         return $amount * pow(10, $decimals);
     }
+    // Woo uses major units
+    public static function convert_to_major_unit($amount) {
+        // Get the number of decimals for pricing from WooCommerce settings
+        $decimals = get_option('woocommerce_price_num_decimals');
+        // Convert the total from the smallest unit to the major unit
+        return $amount / pow(10, $decimals);
+    }
     // convert zaprite to woo status
     public static function convert_zaprite_order_status_to_woo_status($zapriteStatus) {
         switch ($zapriteStatus) {
