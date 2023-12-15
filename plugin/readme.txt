@@ -8,11 +8,11 @@ Stable tag: 1.0.0
 License: MIT
 License URI: https://mit-license.org/
 
-Zaprite is a WooCommerce payment gateway that allows you to accept Bitcoin and Lightning Network payments seamlessly.
+Zaprite is a WooCommerce payment gateway that allows you to accept Bitcoin, Lightning and card payments seamlessly.
 
 == Description ==
 
-Zaprite is a payment gateway for WooCommerce that enables your e-commerce store to accept Bitcoin and Lightning payments.
+Zaprite for WooCommerce is a payment gateway for WooCommerce that enables your e-commerce store to accept Bitcoin, Lightning and card payments.
 This plugin integrates seamlessly with your WooCommerce checkout, providing a fast, secure, and low-cost payment option for your customers.
 
 **Features:**
@@ -41,13 +41,13 @@ This plugin integrates seamlessly with your WooCommerce checkout, providing a fa
 == Screenshots ==
 
 1. Zaprite payment gateway configuration in WooCommerce settings.
-2. Checkout page with Bitcoin and Lightning payment options.
+2. Checkout page with Bitcoin, Lightning and card payment options.
 3. QR code generated for Bitcoin payment.
 
 == Changelog ==
 
 = 1.0.0 =
-* Initial release: Zaprite payment gateway with Bitcoin and Lightning support.
+* Initial release: Zaprite payment gateway with Bitcoin, Lightning and card Checkout support.
 
 == Upgrade Notice ==
 
@@ -58,4 +58,4 @@ Initial release. Please provide feedback and report any issues.
 
 Zaprite is not affiliated with or endorsed by WooCommerce, WordPress, or any cryptocurrency entities. This plugin is developed and maintained by independent developers.
 
-For support and feature requests, please contact [your contact information or support forum link].
+For support and feature requests, please visit https://zaprite.zendesk.com/hc/en-ca.
