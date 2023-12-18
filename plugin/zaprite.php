@@ -151,7 +151,10 @@ function zaprite_server_init()
                 ),
                 'zaprite_api_key'               => array(
                     'title'       => __('Zaprite API Key', 'zaprite-for-woocommerce'),
-                    'description' => __("Enter the Zaprite API Key from your <a href='$zaprite_path/org/default/connections' target='_blank' rel='noopener noreferrer'>Woo store connection settings</a>.", "zaprite-for-woocommerce"),
+                    'description' => sprintf(
+                        __("Enter the Zaprite API Key from your <a href='%s' target='_blank' rel='noopener noreferrer'>Woo store connection settings</a>.", "zaprite-for-woocommerce"), 
+                        htmlentities(ZAPRITE_APP_URL . '/org/default/connections')
+                    ),
                     'type'        => 'text',
                     'default'     => '',
                 ),
