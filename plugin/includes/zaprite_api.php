@@ -7,7 +7,7 @@ namespace ZapritePlugin;
 class API {
 
     protected $api_key;
-    protected $zaprite_url = ZAPRITE_PATH;
+    protected $api_url = ZAPRITE_API_URL;
 
     public function __construct($api_key) {
         $this->api_key = $api_key;
@@ -15,7 +15,7 @@ class API {
 
     public function createCharge($amount, $currency, $order_id) {
 
-        error_log("ZAPRITE: URL $this->zaprite_url");
+        error_log("ZAPRITE: URL $this->api_url");
 
         $c = new CurlWrapper();
         $order = wc_get_order($order_id);
@@ -40,7 +40,7 @@ class API {
             "externalOrderId" => "$order_id",
             "externalUniqId" => $key,
         ];
-        $response = $c->post("$this->zaprite_url/api/public/woo/create-order", array(), json_encode($data), $headers);
+        $response = $c->post("$this->api_url/api/public/woo/create-order", array(), json_encode($data), $headers);
         error_log("Send invoice status ===>" . $response['status'] );
         return $response;
     }
@@ -59,7 +59,7 @@ class API {
             "orderId" => "$zapriteOrderId"
         ];
         $apiKey = $this->api_key;
-        $response = $c->post("$this->zaprite_url/api/public/woo/check-order",  array(), json_encode($data), $headers);
+        $response = $c->post("$this->api_url/api/public/woo/check-order",  array(), json_encode($data), $headers);
         error_log("Check order status ===>" . $response['status'] );
         return $response;
     }
