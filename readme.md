@@ -51,15 +51,14 @@ ln -s <path to the cloned repo>/zaprite-for-woocommerce/plugin <path to local wo
 ```
 
 Currenly there is no way to manage env variables if you use Locals by Flywheel, and there appears to be timing issues if you use the wp-config.php file. So to test locally edit `zaprite.php`
-```php
-define('ZAPRITE_PATH', getenv('ZAPRITE_PATH') ?: 'http://localhost:3000' );
-```
 
+```php
+define('ZAPRITE_APP_URL', getenv('ZAPRITE_APP_URL') ?: 'http://localhost:3000' );
+```
 
 Also make sure you turn on debugging: Edit the `wp-config.php` File. Look for the line that says `define('WP_DEBUG', false);`. If it's not there, you'll need to add it. And change it to true. Then restart your site. This should create a debug.log file in `wp-content`
 
-Block Checkout
-=============
+# Block Checkout
 
 If you want to edit the UI for the Blocks checkout you need to
 compile the javascript code:
@@ -72,6 +71,6 @@ compile the javascript code:
 6. Now you can use the plugin like normal
 7. If you want to update the javascript/html for the payment checkout UI then modify `resources/js/frontend/index.js` and run `npm run start`
 
-** if you get errors with php `composer` you might have to install it via `brew install composer`
+\*\* if you get errors with php `composer` you might have to install it via `brew install composer`
 
 Docs: https://github.com/woocommerce/woocommerce-gateway-dummy

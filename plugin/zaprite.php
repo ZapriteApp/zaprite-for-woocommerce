@@ -15,7 +15,8 @@ include_once(__DIR__ . '/includes/blocks-checkout.php');
 
 add_action('plugins_loaded', 'zaprite_server_init');
 
-define('ZAPRITE_PATH', getenv('ZAPRITE_PATH') ?: 'https://app.zaprite.com' );
+define('ZAPRITE_APP_URL', getenv('ZAPRITE_APP_URL') ?: 'https://app.zaprite.com' );
+define('ZAPRITE_API_URL', getenv('ZAPRITE_API_URL') ?: ZAPRITE_APP_URL );
 
 define('ZAPRITE_WOOCOMMERCE_VERSION', '1.0.0');
 
@@ -119,7 +120,7 @@ function zaprite_server_init()
          */
         public function init_form_fields()
         {
-            $zaprite_path = ZAPRITE_PATH;
+
             $this->form_fields = array(
                 'enabled'                       => array(
                     'title'       => __('Enable Zaprite Payments', 'zaprite-for-woocommerce'),
@@ -151,7 +152,10 @@ function zaprite_server_init()
                 ),
                 'zaprite_api_key'               => array(
                     'title'       => __('Zaprite API Key', 'zaprite-for-woocommerce'),
-                    'description' => __("Enter the Zaprite API Key from your <a href='$zaprite_path/org/default/connections' target='_blank' rel='noopener noreferrer'>WooCommerce plugin settings</a> page.", "zaprite-for-woocommerce"),
+                    'description' => sprintf(
+                        __("Enter the Zaprite API Key from your <a href='%s' target='_blank' rel='noopener noreferrer'>WooCommerce plugin settings</a> page.", "zaprite-for-woocommerce"), 
+                        htmlentities(ZAPRITE_APP_URL . '/org/default/connections')
+                    ),
                     'type'        => 'text',
                     'default'     => '',
                 ),
@@ -177,7 +181,7 @@ function zaprite_server_init()
          */
         public function process_payment($order_id)
         {
-            $zaprite_url = ZAPRITE_PATH;
+            $zaprite_url = ZAPRITE_APP_URL;
 
             error_log("ZAPRITE: process_payment");
             $order = wc_get_order($order_id);
