@@ -100,8 +100,7 @@ function zaprite_server_init()
             <p><?php _e("
                 <p>
                     Accept bitcoin (on-chain and lightning) and fiat payments instantly through your
-                    hosted Zaprite Checkout. First, enable the WooCommerce extension on Zaprite Connections
-                    page and configure your preferred Checkout. Finally, copy the API Key shown into the field below.
+                    hosted Zaprite Checkout. Enable the Woo connection on the Zaprite Connections page then paste the provided API Key into the field below.
                 </p>
                 <p>
                     <a href='https://blog.zaprite.com/integrating-zaprite-with-woocommerce' target='_blank' rel='noreferrer'>
@@ -133,7 +132,7 @@ function zaprite_server_init()
                     'title'       => __('Payment Method Name', 'zaprite-for-woocommerce'),
                     'type'        => 'text',
                     'description' => __('The payment method title which a customer sees at the checkout of your store.', 'zaprite-for-woocommerce'),
-                    'default'     => __('Checkout with Zaprite', 'zaprite-for-woocommerce'),
+                    'default'     => __('Zaprite', 'zaprite-for-woocommerce'),
                 ),
                 'description'                   => array(
                     'title'       => __('Description', 'zaprite-for-woocommerce'),
@@ -153,7 +152,7 @@ function zaprite_server_init()
                 'zaprite_api_key'               => array(
                     'title'       => __('Zaprite API Key', 'zaprite-for-woocommerce'),
                     'description' => sprintf(
-                        __("Enter the Zaprite API Key from your <a href='%s' target='_blank' rel='noopener noreferrer'>WooCommerce plugin settings</a> page.", "zaprite-for-woocommerce"), 
+                        __("Enter the Zaprite API Key from your <a href='%s' target='_blank' rel='noopener noreferrer'>Woo store connection settings</a>.", "zaprite-for-woocommerce"), 
                         htmlentities(ZAPRITE_APP_URL . '/org/default/connections')
                     ),
                     'type'        => 'text',
