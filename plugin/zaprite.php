@@ -311,22 +311,33 @@ function zaprite_server_init()
                     $order->add_order_note('Payment is settled.');
                     // check if fiat premium was applied, if so, save to custom data in woo
                     $paidPremium = $orderStatusRes['response']['paidPremium'];
-                    $paidPremiumCurrency = $orderStatusRes['response']['paidPremiumCurrency'];
-                    $paidPremiumPercent = $orderStatusRes['response']['paidPremiumPercent'];
+                    $paidPremiumCurrency = $orderStatusRes['response']['currency'];
+                    error_log("ZAPRITE: paidPremium minor units $paidPremium $paidPremiumCurrency ");
                     if ($paidPremium) {
                         // add fee to order
+
+                        // Edge Case
+                        // return error if the currencies do not match...this could be an edge case where the
+                        // woo store owner changes his currency before this order's payment is settled.
+                        // TODO: in the future we could convert the currencies and do the math but I do
+                        // not know how to easily do that in PHP
+                        $wooDefaultCurrency = get_woocommerce_currency();
+                        if ($wooDefaultCurrency !== $paidPremiumCurrency){
+                            return new WP_REST_Response("Currencies do not match. Woo currency is $wooDefaultCurrency. Zaprite currency for premium paid is $paidPremiumCurrency", 400);
+                        }
+                        // convert to major units (woo requires major units)
+                        $paidPremiumAmountMajorUnits = Utils::convert_to_major_unit($paidPremium);
+                        error_log("ZAPRITE: paidPremium major units $paidPremiumAmountMajorUnits");
                         $item_fee = new WC_Order_Item_Fee();
                         $item_fee->set_name("Fiat Premium Fee");
-                        $item_fee->set_amount($paidPremium);
+                        $item_fee->set_amount($paidPremiumAmountMajorUnits);
                         $item_fee->set_tax_class( '' ); // or 'standard' if the fee is taxable
                         $item_fee->set_tax_status( 'none' ); // or 'taxable'
-                        $item_fee->set_total($paidPremium); // The total amount of the fee
+                        $item_fee->set_total($paidPremiumAmountMajorUnits); // The total amount of the fee
                         $order->add_item( $item_fee );
                         // Calculate totals and save the order
                         $order->calculate_totals();
-                        $order->add_meta_data('zaprite_fiat_premium_extra_paid_amount', $paidPremium, true);
-                        $order->add_meta_data('zaprite_fiat_premium_extra_paid_currency', $paidPremiumCurrency, true);
-                        $order->add_meta_data('zaprite_fiat_premium_extra_paid_percent', $paidPremiumPercent, true);
+                        $order->add_meta_data('zaprite_fiat_premium_extra_paid_amount', $paidPremiumAmountMajorUnits, true);
                         $order->save();
                     }
                     $order->payment_complete();
