@@ -13,16 +13,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v4
-          with:
-            node-version: 18
-
       - name: Install zip
         run: sudo apt-get install zip
 
       - name: Zip the folder
         run: |
-          cd plugin && npm run package
+          cd plugin && zip -r ../zaprite-payment-gateway.zip ./
 
       - name: Get the version
         id: get_version
