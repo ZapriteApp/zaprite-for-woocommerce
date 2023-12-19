@@ -103,7 +103,7 @@ function zaprite_server_init()
                     hosted Zaprite Checkout. Enable the Woo connection on the Zaprite Connections page then paste the provided API Key into the field below.
                 </p>
                 <p>
-                    <a href='https://blog.zaprite.com/integrating-zaprite-with-woocommerce' target='_blank' rel='noreferrer'>
+                    <a href='https://blog.zaprite.com/how-to-connect-your-woocommerce-store/' target='_blank' rel='noreferrer'>
                         Setup Guide
                     </a>
                 </p>
@@ -396,7 +396,7 @@ function zaprite_server_init()
             if ($file == $plugin_base) {
                 // Add your custom links
                 $new_links = array(
-                    '<a href="https://blog.zaprite.com/integrating-zaprite-with-woocommerce">' . __('Setup Guide', 'zaprite-for-woocommerce') . '</a>',
+                    '<a href="https://blog.zaprite.com/how-to-connect-your-woocommerce-store/">' . __('Setup Guide', 'zaprite-for-woocommerce') . '</a>',
                     // Add more links as needed
                 );
                 $links = array_merge($links, $new_links);
