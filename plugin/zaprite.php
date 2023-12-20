@@ -307,7 +307,6 @@ function zaprite_server_init()
                         $order->save();
                     }
                     if ( !$order->has_status( 'completed' ) ) {
-                        $order->update_status('processing', 'Order status updated via API.', true);
                         $order->add_order_note('Payment is settled.');
                         $order->payment_complete();
                         $order->save();
