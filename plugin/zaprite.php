@@ -83,11 +83,6 @@ function zaprite_server_init()
             ));
             add_action('woocommerce_api_wc_gateway_' . $this->id, array($this, 'check_payment'));
 
-            // This action allows us to set the order to complete even if in a local dev environment
-            add_action('woocommerce_thankyou', array(
-                $this,
-                'check_payment'
-            ));
         }
 
         /**
@@ -152,7 +147,7 @@ function zaprite_server_init()
                 'zaprite_api_key'               => array(
                     'title'       => __('Zaprite API Key', 'zaprite-for-woocommerce'),
                     'description' => sprintf(
-                        __("Enter the Zaprite API Key from your <a href='%s' target='_blank' rel='noopener noreferrer'>Woo store connection settings</a>.", "zaprite-for-woocommerce"), 
+                        __("Enter the Zaprite API Key from your <a href='%s' target='_blank' rel='noopener noreferrer'>Woo store connection settings</a>.", "zaprite-for-woocommerce"),
                         htmlentities(ZAPRITE_APP_URL . '/org/default/connections')
                     ),
                     'type'        => 'text',
@@ -232,33 +227,6 @@ function zaprite_server_init()
             }
         }
 
-        /**
-         * Checks payment on Thank you against the zaprite api
-         */
-        public function check_payment()
-        {
-            try {
-                $order_id = wc_get_order_id_by_order_key($_REQUEST['key']);
-                $order        = wc_get_order($order_id);
-                $r = $this->api->checkCharge($order_id);
-                if ($r['status'] == 200) {
-                    if ($r['response']['paid'] == true) {
-                        $order->update_status('processing', 'Order status updated via API.', true);
-                        $order->add_order_note('Payment completed (checkout).');
-                        $order->payment_complete();
-                        $order->save();
-                        error_log("ZAPRITE: check_payment paid true!!!");
-                    }
-                } else {
-                    // handle non 200 response status
-                    die();
-                }
-            } catch(Exception $e) {
-                die(get_class($e) . ': ' . $e->getMessage());
-            }
-
-        }
-
     }
 
     /**
@@ -307,7 +275,6 @@ function zaprite_server_init()
 
             switch ($wooStatus) {
                 case 'processing':
-                    $order->add_order_note('Payment is settled.');
                     // check if fiat premium was applied, if so, save to custom data in woo
                     $paidPremium = $orderStatusRes['response']['paidPremium'];
                     $paidPremiumCurrency = $orderStatusRes['response']['currency'];
@@ -339,8 +306,12 @@ function zaprite_server_init()
                         $order->add_meta_data('zaprite_fiat_premium_extra_paid_amount', $paidPremiumAmountMajorUnits, true);
                         $order->save();
                     }
-                    $order->payment_complete();
-                    $order->save();
+                    if ( !$order->has_status( 'completed' ) ) {
+                        $order->update_status('processing', 'Order status updated via API.', true);
+                        $order->add_order_note('Payment is settled.');
+                        $order->payment_complete();
+                        $order->save();
+                    }
                     error_log("PAID");
                     echo(json_encode(array(
                         'result'   => 'success',
