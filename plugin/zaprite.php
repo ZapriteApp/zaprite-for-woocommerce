@@ -191,7 +191,7 @@ function zaprite_server_init() {
 			// Call the Zaprite public api to create the invoice
 			$r = $this->api->createCharge( $total_in_smallest_unit, $currency, $order_id );
 
-			if ( $r['status'] === 200 ) {
+			if ( 200 === $r['status'] ) {
 				$resp   = $r['response'];
 				$status = $r['status'];
 				error_log( "ZAPRITE: process_payment status $status" );
@@ -247,7 +247,7 @@ function zaprite_server_init() {
 			$api_key        = $data->get_header( 'apiKey' );
 			$api            = new API( $api_key );
 			$orderStatusRes = $api->checkCharge( $order_id );
-			if ( empty( $order_id ) || $orderStatusRes['status'] !== 200 || $api_key == null ) {
+			if ( empty( $order_id ) || 200 !== $orderStatusRes['status'] || null == $api_key ) {
 				return new WP_Error(
 					'server_error',
 					'Missing Order Id or apiKey',
