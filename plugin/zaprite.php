@@ -153,8 +153,8 @@ function zaprite_server_init() {
 				'zaprite_api_key' => array(
 					'title'       => __( 'Zaprite API Key', 'zaprite-for-woocommerce' ),
 					'description' =>
-						/* translators: %s: URL to Woo store connection settings */
 						sprintf(
+							/* translators: %s: URL to Woo store connection settings */
 							__( "Enter the Zaprite API Key from your <a href='%s' target='_blank' rel='noopener noreferrer'>Woo store connection settings</a>.", 'zaprite-for-woocommerce' ),
 							esc_url( ZAPRITE_APP_URL . '/org/default/connections' )
 						),
@@ -398,7 +398,6 @@ function zaprite_server_init() {
 		}
 
 		function add_custom_order_status() {
-			// Translators: %s: number of orders with 'Underpaid' status
 			register_post_status(
 				'wc-underpaid',
 				array(
@@ -407,10 +406,10 @@ function zaprite_server_init() {
 					'exclude_from_search'       => false,
 					'show_in_admin_all_list'    => true,
 					'show_in_admin_status_list' => true,
+					// Translators: %s: number of orders with 'Underpaid' status
 					'label_count'               => _n_noop( 'Underpaid (%s)', 'Underpaid (%s)' ),
 				)
 			);
-			// Translators: %s: number of orders with 'Overpaid' status
 			register_post_status(
 				'wc-overpaid',
 				array(
@@ -419,10 +418,10 @@ function zaprite_server_init() {
 					'exclude_from_search'       => false,
 					'show_in_admin_all_list'    => true,
 					'show_in_admin_status_list' => true,
+					// Translators: %s: number of orders with 'Overpaid' status
 					'label_count'               => _n_noop( 'Overpaid (%s)', 'Overpaid (%s)' ),
 				)
 			);
-			// Translators: %s: number of orders with 'BTC Pending' status
 			register_post_status(
 				'wc-btc-pending',
 				array(
@@ -431,6 +430,7 @@ function zaprite_server_init() {
 					'exclude_from_search'       => false,
 					'show_in_admin_all_list'    => true,
 					'show_in_admin_status_list' => true,
+					// Translators: %s: number of orders with 'BTC Pending' status
 					'label_count'               => _n_noop( 'BTC Pending (%s)', 'BTC Pending (%s)' ),
 				)
 			);
@@ -461,7 +461,7 @@ function zaprite_server_init() {
 		add_action(
 			'woocommerce_blocks_payment_method_type_registration',
 			function ( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
-				error_log( 'ZAPRITE: PaymentMethodRegistry' );
+				// error_log( 'ZAPRITE: PaymentMethodRegistry' );
 				$payment_method_registry->register( new WC_Gateway_Zaprite_Blocks_Support() );
 			}
 		);
