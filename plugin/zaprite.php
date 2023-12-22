@@ -10,8 +10,6 @@ Author URI: https://zaprite.com
 Text Domain: zaprite-for-woocommerce
 */
 
-require_once __DIR__ . '/includes/blocks-checkout.php';
-
 add_action( 'plugins_loaded', 'zaprite_server_init' );
 
 define( 'ZAPRITE_APP_URL', getenv( 'ZAPRITE_APP_URL' ) ? getenv( 'ZAPRITE_APP_URL' ) : 'https://app.zaprite.com' );
@@ -259,17 +257,6 @@ function zaprite_server_init() {
 			}
 
 			$order = wc_get_order( $order_id );
-			// check keys
-			$keyToCheck = $data->get_param( 'key' );
-			$key        = $order->get_order_key(); // key from the order database
-
-			if ( $key !== $keyToCheck ) {
-				return new WP_Error(
-					'unauthorized_access',
-					'Unauthorized access - keys do not match',
-					array( 'status' => 401 )
-				);
-			}
 
 			// check status
 			$status = $orderStatusRes['response']['status'];
@@ -354,7 +341,22 @@ function zaprite_server_init() {
 					array(
 						'methods'             => 'GET',
 						'callback'            => 'zaprite_server_add_update_status_callback',
-						'permission_callback' => '__return_true',
+						'permission_callback' => function ( WP_REST_Request $request ) {
+							// verify order key
+							$order_id       = $request['id'];
+							$order_key = $request->get_param( 'key' ); // Assuming the order key is passed as a parameter
+							if ( ! $order_id || ! $order_key ) {
+									return false;
+							}
+							$order = wc_get_order( $order_id );
+							if ( ! $order ) {
+									return false;
+							}
+							// Check if the provided order key matches the order
+							$order_keys_match = hash_equals( $order->get_order_key(), $order_key );
+							// error_log( "Do keys match: $order_keys_match" );
+							return $order_keys_match;
+						},
 					)
 				);
 			}
@@ -463,13 +465,16 @@ function zaprite_server_init() {
 		add_action( 'init', 'add_custom_order_status' );
 		add_filter( 'wc_order_statuses', 'add_custom_order_statuses' );
 
-		add_action(
-			'woocommerce_blocks_payment_method_type_registration',
-			function ( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
-				// error_log( 'ZAPRITE: PaymentMethodRegistry' );
-				$payment_method_registry->register( new WC_Gateway_Zaprite_Blocks_Support() );
-			}
-		);
+		if ( class_exists( '\Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
+			require_once __DIR__ . '/includes/blocks-checkout.php';
+			add_action(
+				'woocommerce_blocks_payment_method_type_registration',
+				function ( \Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
+					// error_log( 'ZAPRITE: PaymentMethodRegistry' );
+					$payment_method_registry->register( new WC_Gateway_Zaprite_Blocks_Support() );
+				}
+			);
+		}
 	}
 
 	register_filters_and_actions();
