@@ -14,7 +14,7 @@ require_once __DIR__ . '/includes/blocks-checkout.php';
 
 add_action( 'plugins_loaded', 'zaprite_server_init' );
 
-define( 'ZAPRITE_APP_URL', getenv( 'ZAPRITE_APP_URL' ) ? getenv( 'ZAPRITE_APP_URL' ) : 'http://localhost:3000' );
+define( 'ZAPRITE_APP_URL', getenv( 'ZAPRITE_APP_URL' ) ? getenv( 'ZAPRITE_APP_URL' ) : 'https://app.zaprite.com' );
 define( 'ZAPRITE_API_URL', getenv( 'ZAPRITE_API_URL' ) ? getenv( 'ZAPRITE_APP_URL' ) : ZAPRITE_APP_URL );
 
 define( 'ZAPRITE_WOOCOMMERCE_VERSION', '1.0.0' );
