@@ -152,10 +152,12 @@ function zaprite_server_init() {
 				),
 				'zaprite_api_key' => array(
 					'title'       => __( 'Zaprite API Key', 'zaprite-for-woocommerce' ),
-					'description' => sprintf(
-						__( "Enter the Zaprite API Key from your <a href='%s' target='_blank' rel='noopener noreferrer'>Woo store connection settings</a>.", 'zaprite-for-woocommerce' ),
-						htmlentities( ZAPRITE_APP_URL . '/org/default/connections' )
-					),
+					'description' =>
+						/* translators: %s: URL to Woo store connection settings */
+						sprintf(
+							__( "Enter the Zaprite API Key from your <a href='%s' target='_blank' rel='noopener noreferrer'>Woo store connection settings</a>.", 'zaprite-for-woocommerce' ),
+							esc_url( ZAPRITE_APP_URL . '/org/default/connections' )
+						),
 					'type'        => 'text',
 					'default'     => '',
 				),
@@ -167,8 +169,9 @@ function zaprite_server_init() {
 		 */
 		public function thankyou() {
 			error_log( 'thankyou called' );
-			if ( $description = $this->get_description() ) {
-				echo esc_html( wpautop( wptexturize( $description ) ) );
+			$description = $this->get_description();
+			if ( $description ) {
+					echo esc_html( wpautop( wptexturize( $description ) ) );
 			}
 		}
 
@@ -222,7 +225,7 @@ function zaprite_server_init() {
 			}
 		}
 
-		function set_order_status_pending( $order_id ) {
+		public function set_order_status_pending( $order_id ) {
 			$order = wc_get_order( $order_id );
 			if ( $order instanceof WC_Order ) {
 				$order->update_status( 'pending', 'Order status updated to pending by Zaprite.' );
@@ -340,7 +343,6 @@ function zaprite_server_init() {
 		add_action(
 			'rest_api_init',
 			function () {
-				error_log( 'ZAPRITE: rest_api_init zaprite' );
 				register_rest_route(
 					'zaprite_server/zaprite/v1',
 					'/update_status/(?P<id>\d+)',
@@ -396,6 +398,7 @@ function zaprite_server_init() {
 		}
 
 		function add_custom_order_status() {
+			// Translators: %s: number of orders with 'Underpaid' status
 			register_post_status(
 				'wc-underpaid',
 				array(
@@ -407,6 +410,7 @@ function zaprite_server_init() {
 					'label_count'               => _n_noop( 'Underpaid (%s)', 'Underpaid (%s)' ),
 				)
 			);
+			// Translators: %s: number of orders with 'Overpaid' status
 			register_post_status(
 				'wc-overpaid',
 				array(
@@ -418,6 +422,7 @@ function zaprite_server_init() {
 					'label_count'               => _n_noop( 'Overpaid (%s)', 'Overpaid (%s)' ),
 				)
 			);
+			// Translators: %s: number of orders with 'BTC Pending' status
 			register_post_status(
 				'wc-btc-pending',
 				array(

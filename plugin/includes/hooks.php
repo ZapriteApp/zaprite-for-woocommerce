@@ -10,7 +10,7 @@ function message_on_plugin_activate() {
 
 function zaprite_admin_notices() {
 	// Check if our transient is set, and display the error message
-	$adminUrl = admin_url( 'admin.php?page=wc-settings&tab=checkout&section=zaprite' );
+	$adminUrl = esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=zaprite' ) );
 	if ( get_transient( 'zaprite_admin_notices' ) ) {
 		echo "
           <div class='notice notice-success is-dismissible'>

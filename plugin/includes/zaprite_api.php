@@ -1,11 +1,12 @@
 <?php
 namespace ZapritePlugin;
 
+use ZapritePlugin\CurlWrapper;
+
 /**
  * For calling Zaprite API
  */
 class API {
-
 
 	protected $api_key;
 	protected $api_url = ZAPRITE_API_URL;

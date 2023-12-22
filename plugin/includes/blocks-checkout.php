@@ -26,7 +26,6 @@ final class WC_Gateway_Zaprite_Blocks_Support extends AbstractPaymentMethodType 
 	 * Initializes the payment method type.
 	 */
 	public function initialize() {
-		error_log( 'ZAPRITE: init blocks checkout' );
 		$this->settings = get_option( 'woocommerce_zaprite_settings', array() );
 		$this->gateway  = new WC_Gateway_Zaprite_Server();
 	}
