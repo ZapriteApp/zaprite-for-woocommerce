@@ -311,6 +311,11 @@ function zaprite_server_init() {
 						$order->save();
 					}
 					if ( ! $order->has_status( 'completed' ) ) {
+						if ( Utils::is_order_virtual_digital( $order_id ) ) {
+							$order->update_status( 'completed', 'Order status updated via API.', true );
+						} else {
+							$order->update_status( 'processing', 'Order status updated via API.', true );
+						}
 						$order->add_order_note( 'Payment is settled.' );
 						$order->payment_complete();
 						$order->save();

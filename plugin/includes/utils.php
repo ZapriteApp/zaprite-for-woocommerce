@@ -50,4 +50,26 @@ class Utils {
 		$icon_html  = '<img src="' . $icon_url . '" alt="Zaprite logo" ' . $icon_style . ' />';
 		return $icon_html;
 	}
+
+	/**
+	 * Check if a WooCommerce order contains only virtual and downloadable products.
+	 *
+	 * @param int $order_id The ID of the WooCommerce order.
+	 * @return bool True if all products in the order are virtual and downloadable, false otherwise.
+	 */
+	public static function is_order_virtual_digital( $order_id ) {
+		$order = wc_get_order( $order_id );
+		// Check if the order is valid
+		if ( ! $order ) {
+			return false;
+		}
+		foreach ( $order->get_items() as $item_id => $item ) {
+			$product = $item->get_product();
+			// Check if the product is not virtual or not downloadable
+			if ( ! $product->is_virtual() || ! $product->is_downloadable() ) {
+					return false;
+			}
+		}
+		return true;
+	}
 }
