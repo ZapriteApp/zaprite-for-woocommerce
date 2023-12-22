@@ -1,2 +1,4 @@
-= 1.0.0 :: 2023-12-21 =
-* First public release for testing.
+== Changelog ==
+
+= 1.0.0 2023-12-20 =
+* Initial release: Zaprite payment gateway with Bitcoin, Lightning and card Checkout support.
