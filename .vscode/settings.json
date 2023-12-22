@@ -1,3 +1,11 @@
 {
-  "cSpell.words": ["WOOCOMMERCE", "Zaprite"]
+  "cSpell.words": [
+    "WOOCOMMERCE",
+    "Zaprite"
+  ],
+  "php.stubs": [
+    "pcntl",
+    "wordpress",
+    "*"
+  ]
 }

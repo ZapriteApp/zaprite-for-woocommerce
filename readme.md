@@ -67,7 +67,7 @@ and there appears to be timing issues if you use the wp-config.php file. So to
 test locally edit `zaprite.php`
 
 ```php
-define('ZAPRITE_APP_URL', getenv('ZAPRITE_APP_URL') ?: 'http://localhost:3000' );
+define('ZAPRITE_APP_URL', getenv('ZAPRITE_APP_URL') ? getenv('ZAPRITE_APP_URL') : 'http://localhost:3000' );
 ```
 
 Also make sure you turn on debugging: Edit the `wp-config.php` File. Look for
@@ -95,3 +95,13 @@ javascript code:
 `brew install composer`
 
 Docs: https://github.com/woocommerce/woocommerce-gateway-dummy
+
+Linting
+=======
+```
+cd plugin && npm run lint
+```
+or
+```
+php ./vendor/bin/phpcbf --standard=WordPress --ignore=*.js ./plugin
+```
