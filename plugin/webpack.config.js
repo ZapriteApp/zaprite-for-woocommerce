@@ -1,6 +1,6 @@
-const defaultConfig = require('@wordpress/scripts/config/webpack.config');
-const WooCommerceDependencyExtractionWebpackPlugin = require('@woocommerce/dependency-extraction-webpack-plugin');
-const path = require('path');
+const defaultConfig                                = require( '@wordpress/scripts/config/webpack.config' );
+const WooCommerceDependencyExtractionWebpackPlugin = require( '@woocommerce/dependency-extraction-webpack-plugin' );
+const path = require( 'path' );
 
 const wcDepMap = {
 	'@woocommerce/blocks-registry': ['wc', 'wcBlocksRegistry'],
@@ -35,13 +35,15 @@ module.exports = {
 		filename: '[name].js',
 	},
 	plugins: [
-		...defaultConfig.plugins.filter(
-			(plugin) =>
-				plugin.constructor.name !== 'DependencyExtractionWebpackPlugin'
-		),
-		new WooCommerceDependencyExtractionWebpackPlugin({
-			requestToExternal,
-			requestToHandle
-		})
+	...defaultConfig.plugins.filter(
+		(plugin) =>
+		plugin.constructor.name !== 'DependencyExtractionWebpackPlugin'
+	),
+		new WooCommerceDependencyExtractionWebpackPlugin(
+			{
+				requestToExternal,
+				requestToHandle
+			}
+		)
 	]
 };

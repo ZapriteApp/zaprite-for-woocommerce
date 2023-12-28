@@ -18,6 +18,7 @@
 		"i18n:pot": "php -d xdebug.max_nesting_level=512 $(which wp) i18n make-pot --exclude=\"node_modules/,languages/,assets/\" . languages/woocommerce-gateway-zaprite.pot",
 		"i18n:json": "$(which wp) i18n make-json languages --no-purge",
 		"check-engines": "wp-scripts check-engines",
-		"package": "./bin/create-plugin-zip.sh"
+		"package": "./bin/create-plugin-zip.sh",
+		"lint": "cd .. && php ./vendor/bin/phpcbf --standard=WordPress --ignore=*.js ./plugin"
 	}
 }
