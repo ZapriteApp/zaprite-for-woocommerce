@@ -64,7 +64,7 @@ ln -s <path to the cloned repo>/zaprite-for-woocommerce/plugin <path to local wo
 
 Currenly there is no way to manage env variables if you use Locals by Flywheel,
 and there appears to be timing issues if you use the wp-config.php file. So to
-test locally edit `zaprite.php`
+test locally edit `zaprite-payment-gateway.php`
 
 ```php
 define('ZAPRITE_APP_URL', getenv('ZAPRITE_APP_URL') ? getenv('ZAPRITE_APP_URL') : 'http://localhost:3000' );
@@ -96,12 +96,14 @@ javascript code:
 
 Docs: https://github.com/woocommerce/woocommerce-gateway-dummy
 
-Linting
-=======
+# Linting
+
 ```
 cd plugin && npm run lint
 ```
+
 or
+
 ```
 php ./vendor/bin/phpcbf --standard=WordPress --ignore=*.js ./plugin
 ```
