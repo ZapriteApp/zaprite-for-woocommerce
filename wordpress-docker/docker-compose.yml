@@ -16,7 +16,7 @@ services:
       ZAPRITE_API_URL: 'http://host.docker.internal:3000'
     volumes:
       - wordpress_data:/var/www/html
-      - ../plugin:/var/www/html/wp-content/plugins/zaprite-payment-gateway
+      - ../zaprite-payment-gateway:/var/www/html/wp-content/plugins/zaprite-payment-gateway
 
   db:
     image: mysql:8.2.0
