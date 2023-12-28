@@ -7,7 +7,7 @@ Description: Accept bitcoin (on-chain and lightning) and fiat payments in one un
 Version: 1.0.0
 Author: Zaprite
 Author URI: https://zaprite.com
-Text Domain: zaprite-for-woocommerce
+Text Domain: zaprite-payment-gateway
 */
 
 add_action( 'plugins_loaded', 'zaprite_server_init' );
@@ -55,7 +55,7 @@ function zaprite_server_init() {
 			$this->id                 = 'zaprite';
 			$this->has_fields         = false;
 			$this->method_title       = 'Zaprite';
-			$this->method_description = __( 'Bitcoin payments made easy. Accept on-chain, lightning and fiat payments in one unified Zaprite Checkout experience.', 'zaprite-for-woocommerce' );
+			$this->method_description = __( 'Bitcoin payments made easy. Accept on-chain, lightning and fiat payments in one unified Zaprite Checkout experience.', 'zaprite-payment-gateway' );
 
 			$this->init_form_fields();
 			$this->init_settings();
@@ -88,7 +88,7 @@ function zaprite_server_init() {
 		public function admin_options() {
 			?>
 			<h3>
-				<?php esc_html_e( 'Zaprite', 'zaprite-for-woocommerce' ); ?>
+				<?php esc_html_e( 'Zaprite', 'zaprite-payment-gateway' ); ?>
 			</h3>
 			<p>
 				<?php
@@ -104,7 +104,7 @@ function zaprite_server_init() {
                     </a>
                 </p>
                 ",
-					'zaprite-for-woocommerce'
+					'zaprite-payment-gateway'
 				);
 				?>
 			</p>
@@ -121,39 +121,39 @@ function zaprite_server_init() {
 
 			$this->form_fields = array(
 				'enabled'         => array(
-					'title'       => __( 'Enable Zaprite Payments', 'zaprite-for-woocommerce' ),
-					'label'       => __( 'Enable payments via Zaprite Checkout.', 'zaprite-for-woocommerce' ),
+					'title'       => __( 'Enable Zaprite Payments', 'zaprite-payment-gateway' ),
+					'label'       => __( 'Enable payments via Zaprite Checkout.', 'zaprite-payment-gateway' ),
 					'type'        => 'checkbox',
 					'description' => '',
 					'default'     => 'no',
 				),
 				'title'           => array(
-					'title'       => __( 'Payment Method Name', 'zaprite-for-woocommerce' ),
+					'title'       => __( 'Payment Method Name', 'zaprite-payment-gateway' ),
 					'type'        => 'text',
-					'description' => __( 'The payment method title which a customer sees at the checkout of your store.', 'zaprite-for-woocommerce' ),
-					'default'     => __( 'Zaprite', 'zaprite-for-woocommerce' ),
+					'description' => __( 'The payment method title which a customer sees at the checkout of your store.', 'zaprite-payment-gateway' ),
+					'default'     => __( 'Zaprite', 'zaprite-payment-gateway' ),
 				),
 				'description'     => array(
-					'title'       => __( 'Description', 'zaprite-for-woocommerce' ),
+					'title'       => __( 'Description', 'zaprite-payment-gateway' ),
 					'type'        => 'text',
-					'description' => __( 'The payment method description which a customer sees at the checkout of your store.', 'zaprite-for-woocommerce' ),
-					'placeholder' => __( 'Powered by Zaprite', 'zaprite-for-woocommerce' ),
-					'default'     => __( 'Powered by Zaprite', 'zaprite-for-woocommerce' ),
-					'disabled'    => __( true, 'zaprite-for-woocommerce' ),
+					'description' => __( 'The payment method description which a customer sees at the checkout of your store.', 'zaprite-payment-gateway' ),
+					'placeholder' => __( 'Powered by Zaprite', 'zaprite-payment-gateway' ),
+					'default'     => __( 'Powered by Zaprite', 'zaprite-payment-gateway' ),
+					'disabled'    => __( true, 'zaprite-payment-gateway' ),
 				),
 				'payment_image'   => array(
-					'title'       => __( 'Show checkout Image', 'zaprite-for-woocommerce' ),
-					'label'       => __( 'Show Zaprite image on checkout', 'zaprite-for-woocommerce' ),
+					'title'       => __( 'Show checkout Image', 'zaprite-payment-gateway' ),
+					'label'       => __( 'Show Zaprite image on checkout', 'zaprite-payment-gateway' ),
 					'type'        => 'checkbox',
 					'description' => Utils::get_icon_image_html(),
-					'default'     => __( 'yes', 'zaprite-for-woocommerce' ),
+					'default'     => __( 'yes', 'zaprite-payment-gateway' ),
 				),
 				'zaprite_api_key' => array(
-					'title'       => __( 'Zaprite API Key', 'zaprite-for-woocommerce' ),
+					'title'       => __( 'Zaprite API Key', 'zaprite-payment-gateway' ),
 					'description' =>
 						sprintf(
 							/* translators: %s: URL to Woo store connection settings */
-							__( "Enter the Zaprite API Key from your <a href='%s' target='_blank' rel='noopener noreferrer'>Woo store connection settings</a>.", 'zaprite-for-woocommerce' ),
+							__( "Enter the Zaprite API Key from your <a href='%s' target='_blank' rel='noopener noreferrer'>Woo store connection settings</a>.", 'zaprite-payment-gateway' ),
 							esc_url( ZAPRITE_APP_URL . '/org/default/connections' )
 						),
 					'type'        => 'text',
@@ -372,7 +372,7 @@ function zaprite_server_init() {
 
 		// Settings Link
 		function zaprite_add_settings_link( $links ) {
-			$settings_link = '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout&section=zaprite' ) . '">' . __( 'Settings', 'zaprite-for-woocommerce' ) . '</a>';
+			$settings_link = '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout&section=zaprite' ) . '">' . __( 'Settings', 'zaprite-payment-gateway' ) . '</a>';
 			array_unshift( $links, $settings_link );
 			return $links;
 		}
@@ -383,7 +383,7 @@ function zaprite_server_init() {
 			if ( $file == $plugin_base ) {
 				// Add your custom links
 				$new_links = array(
-					'<a href="https://blog.zaprite.com/how-to-connect-your-woocommerce-store/">' . __( 'Setup Guide', 'zaprite-for-woocommerce' ) . '</a>',
+					'<a href="https://blog.zaprite.com/how-to-connect-your-woocommerce-store/">' . __( 'Setup Guide', 'zaprite-payment-gateway' ) . '</a>',
 					// Add more links as needed
 				);
 				$links = array_merge( $links, $new_links );

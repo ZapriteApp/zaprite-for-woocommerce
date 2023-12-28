@@ -64,7 +64,7 @@ final class WC_Gateway_Zaprite_Blocks_Support extends AbstractPaymentMethodType 
 		);
 
 		// if ( function_exists( 'wp_set_script_translations' ) ) {
-		// wp_set_script_translations( 'wc-zaprite-payments-blocks', 'zaprite-for-woocommerce', WC_Dummy_Payments::plugin_abspath() . 'languages/' );
+		// wp_set_script_translations( 'wc-zaprite-payments-blocks', 'zaprite-payment-gateway', WC_Dummy_Payments::plugin_abspath() . 'languages/' );
 		// }
 
 		return array( 'wc-zaprite-payments-blocks' );
