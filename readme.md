@@ -24,7 +24,7 @@ _In order to use this plugin you have to create an account on
 
 To develop locally, you can run wordpress locally with docker. This will run
 wordpress on port 8000 with debugging enabled. It will also mount your local
-`./plugin` directly in the wordpress `plugins` directory so that you can edit
+`./zaprite-payment-gateway` directly in the wordpress `plugins` directory so that you can edit
 and see the result of your changes directly in wordpress.
 
 First, you'll need to run the docker containers:
@@ -46,8 +46,8 @@ Then you'll need to:
 1. Activate Zaprite plugin: http://localhost:8000/wp-admin/plugins.php
 1. Configure zaprite plugin:
    http://localhost:8000/wp-admin/admin.php?page=wc-settings&tab=checkout&section=zaprite
-    1. Check "Enable payments via Zaprite Checkout"
-    1. Enter your Zaprite API key
+   1. Check "Enable payments via Zaprite Checkout"
+   1. Enter your Zaprite API key
 
 You can now test the plugin by creating an order in your shop:
 http://localhost:8000/shop/

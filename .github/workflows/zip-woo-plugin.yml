@@ -18,7 +18,7 @@ jobs:
 
       - name: Zip the folder
         run: |
-          cd plugin && zip -r ../zaprite-payment-gateway.zip ./
+          zip -r zaprite-payment-gateway.zip zaprite-payment-gateway
 
       - name: Get the version
         id: get_version
