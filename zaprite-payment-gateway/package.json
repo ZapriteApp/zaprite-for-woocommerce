@@ -19,6 +19,6 @@
     "i18n:json": "$(which wp) i18n make-json languages --no-purge",
     "check-engines": "wp-scripts check-engines",
     "package": "../bin/create-plugin-zip.sh",
-    "lint": "cd .. && php $HOME/.composer/vendor/bin/phpcbf --standard=WordPress --ignore=*.js ./zaprite-payment-gateway"
+    "lint": "cd .. && composer install && php $HOME/.composer/vendor/bin/phpcbf --standard=WordPress --ignore=*.js ./zaprite-payment-gateway"
   }
 }
