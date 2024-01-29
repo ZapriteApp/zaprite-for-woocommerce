@@ -1,11 +1,12 @@
-# Zaprite Extension for Woo
+# Zaprite Payment Gateway for WooCommerce
 
 **Accept Bitcoin and Lightning**
 
 Start accepting Bitcoin, Lightning and Liquid today — Powered by Zaprite.
 
-This plugin allows stores that use Wordpress WooCommerce shopping cart system to
-accept Bitcoin and Bitcoin through Lightning Network via Zaprite.
+This plugin allows stores that use WordPress WooCommerce shopping cart system to
+accept Bitcoin, Lightning, Liquid and card payments using their Zaprite
+Checkouts.
 
 _In order to use this plugin you have to create an account on
 [https://app.zaprite.com](https://app.zaprite.com)_
@@ -22,10 +23,10 @@ _In order to use this plugin you have to create an account on
 
 ### With Docker
 
-To develop locally, you can run wordpress locally with docker. This will run
-wordpress on port 8000 with debugging enabled. It will also mount your local
-`./zaprite-payment-gateway` directly in the wordpress `plugins` directory so that you can edit
-and see the result of your changes directly in wordpress.
+To develop locally, you can run WordPress locally with docker. This will run
+WordPress on port 8000 with debugging enabled. It will also mount your local
+`./zaprite-payment-gateway` directly in the WordPress `plugins` directory so
+that you can edit and see the result of your changes directly in WordPress.
 
 First, you'll need to run the docker containers:
 
@@ -46,15 +47,15 @@ Then you'll need to:
 1. Activate Zaprite plugin: http://localhost:8000/wp-admin/plugins.php
 1. Configure zaprite plugin:
    http://localhost:8000/wp-admin/admin.php?page=wc-settings&tab=checkout&section=zaprite
-   1. Check "Enable payments via Zaprite Checkout"
-   1. Enter your Zaprite API key
+    1. Check "Enable payments via Zaprite Checkout"
+    1. Enter your Zaprite API key
 
 You can now test the plugin by creating an order in your shop:
 http://localhost:8000/shop/
 
 ### Without Docker
 
-If you prefer using another way to run Wordpress locally, like
+If you prefer using another way to run WordPress locally, like
 [Local by Flywheel](https://localwp.com/), you can clone this git repo anywhere
 you want then just create a symlink to the `plugin` directory:
 
