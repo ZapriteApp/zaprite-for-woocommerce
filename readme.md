@@ -108,3 +108,10 @@ or
 ```
 php ./vendor/bin/phpcbf --standard=WordPress --ignore=*.js ./plugin
 ```
+
+# Building
+Dependencies
+
+1. Install php `brew install php`
+2. Install wordpress cli tools `brew install wp-cli` 
+3. `npm run build`
