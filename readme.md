@@ -98,9 +98,14 @@ javascript code:
 Docs: https://github.com/woocommerce/woocommerce-gateway-dummy
 
 # Linting
+Install dependencies 
+- `brew install php-code-sniffer`
+- `brew install composer`
+- `phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs`
+
 
 ```
-cd plugin && npm run lint
+cd zaprite-payment-gateway && npm run lint
 ```
 
 or
@@ -108,3 +113,10 @@ or
 ```
 php ./vendor/bin/phpcbf --standard=WordPress --ignore=*.js ./plugin
 ```
+
+# Building
+Dependencies
+
+1. Install php `brew install php`
+2. Install wordpress cli tools `brew install wp-cli` 
+3. `npm run build`

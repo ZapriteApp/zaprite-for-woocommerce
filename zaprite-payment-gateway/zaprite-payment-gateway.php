@@ -92,17 +92,13 @@ function zaprite_server_init() {
 			</h3>
 			<p>
 				<?php
-				esc_html_e(
+				_e(
 					"
-                <p>
                     Accept bitcoin (on-chain and lightning) and fiat payments instantly through your
                     hosted Zaprite Checkout. Enable the Woo connection on the Zaprite Connections page then paste the provided API Key into the field below.
-                </p>
-                <p>
                     <a href='https://blog.zaprite.com/how-to-connect-your-woocommerce-store/' target='_blank' rel='noreferrer'>
                         Setup Guide
                     </a>
-                </p>
                 ",
 					'zaprite-payment-gateway'
 				);
