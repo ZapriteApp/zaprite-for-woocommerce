@@ -98,9 +98,17 @@ javascript code:
 Docs: https://github.com/woocommerce/woocommerce-gateway-dummy
 
 # Linting
+Install dependencies 
+- `brew install php-code-sniffer`
+- `brew install composer`
+- `composer global require "squizlabs/php_codesniffer=*"`
+- `composer global require wp-coding-standards/wpcs`
+- `composer global require phpcsstandards/phpcsutils`
+- `phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs`
+
 
 ```
-cd plugin && npm run lint
+cd zaprite-payment-gateway && npm run lint
 ```
 
 or
