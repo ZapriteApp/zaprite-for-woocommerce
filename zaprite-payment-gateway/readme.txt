@@ -55,3 +55,13 @@ For support and feature requests, please visit https://zaprite.zendesk.com/hc/en
 == Additional Notes ==
 
 Zaprite is not affiliated with or endorsed by WooCommerce, WordPress, or any cryptocurrency entities. This plugin is developed and maintained by independent developers.
+
+== Frequently Asked Questions ==
+
+See the blog for FAQ's https://blog.zaprite.com/how-to-connect-your-woocommerce-store/ 
+
+== Screenshots ==
+
+1. The API key from Zaprite for WooCommerce
+2. Configure the plugin
+3. Checkout using Zaprite
