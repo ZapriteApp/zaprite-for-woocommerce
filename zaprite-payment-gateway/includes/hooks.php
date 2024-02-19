@@ -3,7 +3,7 @@
 /**
  * Admin Hooks
  */
-function message_on_plugin_activate() {
+function zaprite_message_on_plugin_activate() {
 	// Set a transient that expires after a little while (e.g., 60 seconds)
 	set_transient( 'zaprite_admin_notices', true, 60 );
 }

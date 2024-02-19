@@ -1,14 +1,15 @@
 <?php
 
 /*
-Plugin Name: Zaprite Payment Gateway
-Plugin URI: https://github.com/ZapriteApp/zaprite-for-woocommerce
-Description: Accept bitcoin (on-chain and lightning) and fiat payments in one unified Zaprite Checkout.
-Version: 1.0.0
-Author: zaprite
-Author URI: https://zaprite.com
-Text Domain: zaprite-payment-gateway
-*/
+ * Plugin Name: Zaprite Payment Gateway
+ * Plugin URI: https://github.com/ZapriteApp/zaprite-for-woocommerce
+ * Description: Accept bitcoin (on-chain and lightning) and fiat payments in one unified Zaprite Checkout.
+ * Version: 1.0.0
+ * Author: zaprite
+ * Author URI: https://zaprite.com
+ * Text Domain: zaprite-payment-gateway
+ * License: MIT
+ */
 
 add_action( 'plugins_loaded', 'zaprite_server_init' );
 
@@ -22,7 +23,7 @@ define( 'WC_PAYMENT_GATEWAY_ZAPRITE_URL', plugins_url( '', WC_PAYMENT_GATEWAY_ZA
 define( 'WC_PAYMENT_GATEWAY_ZAPRITE_ASSETS', WC_PAYMENT_GATEWAY_ZAPRITE_URL . '/assets' );
 
 require_once __DIR__ . '/includes/hooks.php';
-register_activation_hook( __FILE__, 'message_on_plugin_activate' );
+register_activation_hook( __FILE__, 'zaprite_message_on_plugin_activate' );
 add_action( 'admin_notices', 'zaprite_admin_notices' );
 
 require_once __DIR__ . '/includes/init.php';
