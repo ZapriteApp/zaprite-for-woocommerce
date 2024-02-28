@@ -93,16 +93,19 @@ function zaprite_server_init() {
 			</h3>
 			<p>
 				<?php
-				_e(
-					"
-                    Accept bitcoin (on-chain and lightning) and fiat payments instantly through your
-                    hosted Zaprite Checkout. Enable the Woo connection on the Zaprite Connections page then paste the provided API Key into the field below.
-                    <a href='https://blog.zaprite.com/how-to-connect-your-woocommerce-store/' target='_blank' rel='noreferrer'>
-                        Setup Guide
-                    </a>
-                ",
-					'zaprite-payment-gateway'
-				);
+					echo wp_kses(
+						__(
+							"Accept bitcoin (on-chain and lightning) and fiat payments instantly through your hosted Zaprite Checkout. Enable the Woo connection on the Zaprite Connections page then paste the provided API Key into the field below. <a href='https://blog.zaprite.com/how-to-connect-your-woocommerce-store/' target='_blank' rel='noreferrer'>Setup Guide</a>",
+							'zaprite-payment-gateway'
+						),
+						array(
+							'a' => array(
+								'href'   => array(),
+								'target' => array(),
+								'rel'    => array(),
+							),
+						)
+					);
 				?>
 			</p>
 			<table class="form-table">
@@ -136,7 +139,7 @@ function zaprite_server_init() {
 					'description' => __( 'The payment method description which a customer sees at the checkout of your store.', 'zaprite-payment-gateway' ),
 					'placeholder' => __( 'Powered by Zaprite', 'zaprite-payment-gateway' ),
 					'default'     => __( 'Powered by Zaprite', 'zaprite-payment-gateway' ),
-					'disabled'    => __( true, 'zaprite-payment-gateway' ),
+					'disabled'    => true,
 				),
 				'payment_image'   => array(
 					'title'       => __( 'Show checkout Image', 'zaprite-payment-gateway' ),
@@ -305,7 +308,7 @@ function zaprite_server_init() {
 						$order->save();
 					}
 					error_log( 'PAID' );
-					echo ( json_encode(
+					echo ( wp_json_encode(
 						array(
 							'result'   => 'success',
 							'redirect' => $order->get_checkout_order_received_url(),
