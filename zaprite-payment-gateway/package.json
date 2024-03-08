@@ -12,7 +12,7 @@
   },
   "scripts": {
     "start": "wp-scripts start",
-    "build": "wp-scripts build && npm run i18n:build",
+    "build": "composer install && wp-scripts build && npm run i18n:build",
     "i18n": "npm run i18n:build",
     "i18n:build": "npm run i18n:pot && ../bin/build_i18n.sh",
     "i18n:pot": "php -d xdebug.max_nesting_level=512 $(which wp) i18n make-pot --exclude=\"node_modules/,languages/,assets/\" . languages/zaprite-payment-gateway.pot",

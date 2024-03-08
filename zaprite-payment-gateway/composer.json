@@ -1,0 +1,6 @@
+{
+    "name": "nick/zaprite-payment-gateway",
+    "require": {
+        "moneyphp/money": "^4.5"
+    }
+}

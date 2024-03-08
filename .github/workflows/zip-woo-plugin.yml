@@ -16,6 +16,10 @@ jobs:
       - name: Install zip
         run: sudo apt-get install zip
 
+      - name: Install php deps
+        uses: php-actions/composer@v6
+        run: cd zaprite-payment-gateway && composer install
+
       - name: Zip the folder
         run: |
           zip -r zaprite-payment-gateway.zip zaprite-payment-gateway

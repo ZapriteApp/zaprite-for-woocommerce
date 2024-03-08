@@ -1,20 +1,27 @@
 <?php
 namespace ZapritePlugin;
 
-class Utils {
+use Money\Money;
+use Money\Currencies\ISOCurrencies;
+use Money\Parser\DecimalMoneyParser;
+use Money\Formatter\DecimalMoneyFormatter;
+use Money\Currency;
 
-	public static function convert_to_smallest_unit( $amount ) {
-		// Get the number of decimals for pricing from WooCommerce settings
-		$decimals = get_option( 'woocommerce_price_num_decimals' );
-		// Convert the total to the smallest unit
-		return $amount * pow( 10, $decimals );
+class Utils {
+	public static function convert_to_smallest_unit( $amount, $currencyCode ) {
+		$currencies  = new ISOCurrencies();
+		$moneyParser = new DecimalMoneyParser( $currencies );
+		$money       = $moneyParser->parse( $amount, new Currency( $currencyCode ) ); 
+		return $money->getAmount();
 	}
 	// Woo uses major units
-	public static function convert_to_major_unit( $amount ) {
-		// Get the number of decimals for pricing from WooCommerce settings
-		$decimals = get_option( 'woocommerce_price_num_decimals' );
-		// Convert the total from the smallest unit to the major unit
-		return $amount / pow( 10, $decimals );
+	public static function convert_to_major_unit( $amount, $currencyCode ) {
+		$currencies     = new ISOCurrencies();
+		$moneyParser    = new DecimalMoneyParser( $currencies );
+		$money          = $moneyParser->parse( $amount, new Currency( $currencyCode ) );
+		$moneyFormatter = new DecimalMoneyFormatter( $currencies );
+		$majorAmount    = $moneyFormatter->format( $money );
+		return $majorAmount;
 	}
 	// convert zaprite to woo status
 	public static function convert_zaprite_order_status_to_woo_status( $zapriteStatus ) {
