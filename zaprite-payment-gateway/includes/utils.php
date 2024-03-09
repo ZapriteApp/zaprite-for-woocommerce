@@ -11,16 +11,27 @@ class Utils {
 	public static function convert_to_smallest_unit( $amount, $currencyCode ) {
 		$currencies  = new ISOCurrencies();
 		$moneyParser = new DecimalMoneyParser( $currencies );
-		$money       = $moneyParser->parse( $amount, new Currency( $currencyCode ) ); 
+		$money       = $moneyParser->parse( $amount, new Currency( $currencyCode ) );
 		return $money->getAmount();
 	}
 	// Woo uses major units
 	public static function convert_to_major_unit( $amount, $currencyCode ) {
-		$currencies     = new ISOCurrencies();
+		$currencies = new ISOCurrencies();
+		$currency   = new Currency( $currencyCode );
+		// Check if the currency has subunits
+		$subunit = $currencies->subunitFor( $currency );
+		if ( $subunit > 0 ) {
+			// For currencies with subunits, convert the amount to a string in major units format
+			$amountInMajorUnits = bcdiv( (string) $amount, (string) pow( 10, $subunit ), $subunit );
+		} else {
+			// For zero decimal currencies, the major unit is equivalent to the minor unit
+			$amountInMajorUnits = (string) $amount;
+		}
 		$moneyParser    = new DecimalMoneyParser( $currencies );
-		$money          = $moneyParser->parse( $amount, new Currency( $currencyCode ) );
+		$money          = $moneyParser->parse( $amountInMajorUnits, $currency );
 		$moneyFormatter = new DecimalMoneyFormatter( $currencies );
 		$majorAmount    = $moneyFormatter->format( $money );
+		error_log( "MajorAmount: $majorAmount" );
 		return $majorAmount;
 	}
 	// convert zaprite to woo status

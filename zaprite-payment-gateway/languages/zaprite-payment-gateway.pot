@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-03-08T21:37:54+00:00\n"
+"POT-Creation-Date: 2024-03-08T22:15:17+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: zaprite-payment-gateway\n"
@@ -102,10 +102,10 @@ msgstr ""
 msgid "Enter the Zaprite API Key from your <a href='%s' target='_blank' rel='noopener noreferrer'>Woo store connection settings</a>."
 msgstr ""
 
-#: zaprite-payment-gateway.php:386
+#: zaprite-payment-gateway.php:385
 msgid "Settings"
 msgstr ""
 
-#: zaprite-payment-gateway.php:397
+#: zaprite-payment-gateway.php:396
 msgid "Setup Guide"
 msgstr ""

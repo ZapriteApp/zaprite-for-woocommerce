@@ -191,8 +191,8 @@ function zaprite_server_init() {
 			$zaprite_url     = ZAPRITE_APP_URL;
 			$zaprite_pay_url = ZAPRITE_PAY_URL;
 
-			$order  = wc_get_order( $order_id );
-			$amount = $order->get_total();
+			$order    = wc_get_order( $order_id );
+			$amount   = $order->get_total();
 			$currency = $order->get_currency();
 			error_log( "ZAPRITE: Amount - $amount Currency: $currency" );
 			$total_in_smallest_unit = Utils::convert_to_smallest_unit( $amount, $currency );
