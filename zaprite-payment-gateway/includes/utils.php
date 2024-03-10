@@ -7,8 +7,13 @@ use Money\Parser\DecimalMoneyParser;
 use Money\Formatter\DecimalMoneyFormatter;
 use Money\Currency;
 
+define( 'BTC_TO_SATS', '100000000' );
+
 class Utils {
 	public static function convert_to_smallest_unit( $amount, $currencyCode ) {
+		if ( $currencyCode === 'BTC' ) {
+			return bcmul( $amount, (string) BTC_TO_SATS, 0 );
+		}
 		$currencies  = new ISOCurrencies();
 		$moneyParser = new DecimalMoneyParser( $currencies );
 		$money       = $moneyParser->parse( $amount, new Currency( $currencyCode ) );
@@ -16,6 +21,9 @@ class Utils {
 	}
 	// Woo uses major units
 	public static function convert_to_major_unit( $amount, $currencyCode ) {
+		if ( $currencyCode === 'BTC' ) {
+			return bcdiv( (string) $amount, BTC_TO_SATS, 8 );
+		}
 		$currencies = new ISOCurrencies();
 		$currency   = new Currency( $currencyCode );
 		// Check if the currency has subunits
