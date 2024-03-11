@@ -1,46 +1,25 @@
 <?php
 namespace ZapritePlugin;
 
-use Money\Money;
-use Money\Currencies\ISOCurrencies;
-use Money\Parser\DecimalMoneyParser;
-use Money\Formatter\DecimalMoneyFormatter;
-use Money\Currency;
-
-define( 'BTC_TO_SATS', '100000000' );
-
 class Utils {
-	public static function convert_to_smallest_unit( $amount, $currencyCode ) {
-		if ( $currencyCode === 'BTC' ) {
-			return bcmul( $amount, (string) BTC_TO_SATS, 0 );
+	public static function get_currency_smallest_unit_factor( $currency ) {
+		// source: https://stripe.com/docs/currencies
+		if ( in_array( $currency, array( 'CLP', 'JPY', 'KRW', 'UGX', 'VND' ) ) ) {
+			return 1;
 		}
-		$currencies  = new ISOCurrencies();
-		$moneyParser = new DecimalMoneyParser( $currencies );
-		$money       = $moneyParser->parse( $amount, new Currency( $currencyCode ) );
-		return $money->getAmount();
+		if ( in_array( $currency, array( 'BHD', 'JOD', 'KWD', 'OMR', 'TND' ) ) ) {
+			return 1000;
+		}
+		if ( in_array( $currency, array( 'BTC', 'LBTC' ) ) ) {
+			return 100_000_000;
+		}
+		return 100;
 	}
-	// Woo uses major units
-	public static function convert_to_major_unit( $amount, $currencyCode ) {
-		if ( $currencyCode === 'BTC' ) {
-			return bcdiv( (string) $amount, BTC_TO_SATS, 8 );
-		}
-		$currencies = new ISOCurrencies();
-		$currency   = new Currency( $currencyCode );
-		// Check if the currency has subunits
-		$subunit = $currencies->subunitFor( $currency );
-		if ( $subunit > 0 ) {
-			// For currencies with subunits, convert the amount to a string in major units format
-			$amountInMajorUnits = bcdiv( (string) $amount, (string) pow( 10, $subunit ), $subunit );
-		} else {
-			// For zero decimal currencies, the major unit is equivalent to the minor unit
-			$amountInMajorUnits = (string) $amount;
-		}
-		$moneyParser    = new DecimalMoneyParser( $currencies );
-		$money          = $moneyParser->parse( $amountInMajorUnits, $currency );
-		$moneyFormatter = new DecimalMoneyFormatter( $currencies );
-		$majorAmount    = $moneyFormatter->format( $money );
-		error_log( "MajorAmount: $majorAmount" );
-		return $majorAmount;
+	public static function to_smallest_unit( $amount, $currency ) {
+		return round( $amount * self::get_currency_smallest_unit_factor( $currency ) );
+	}
+	public static function from_smallest_unit( $amount, $currency ) {
+		return $amount / self::get_currency_smallest_unit_factor( $currency );
 	}
 	// convert zaprite to woo status
 	public static function convert_zaprite_order_status_to_woo_status( $zapriteStatus ) {

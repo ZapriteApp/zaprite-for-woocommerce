@@ -21,12 +21,6 @@ _In order to use this plugin you have to create an account on
 
 ## Local development
 
-### Dependencies
-This project uses PHP composer to manage dependencies. Install it here:
-https://getcomposer.org/doc/00-intro.md
-
-Then run: `cd zaprite-payment-gateway && composer install` . This should create a vendor folder with the deps
-
 ### With Docker
 
 To develop locally, you can run WordPress locally with docker. This will run

@@ -29,8 +29,6 @@ define( 'WC_PAYMENT_GATEWAY_ZAPRITE_FILE', __FILE__ );
 define( 'WC_PAYMENT_GATEWAY_ZAPRITE_URL', plugins_url( '', WC_PAYMENT_GATEWAY_ZAPRITE_FILE ) );
 define( 'WC_PAYMENT_GATEWAY_ZAPRITE_ASSETS', WC_PAYMENT_GATEWAY_ZAPRITE_URL . '/assets' );
 
-require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
-
 require_once __DIR__ . '/includes/hooks.php';
 register_activation_hook( __FILE__, 'zaprite_message_on_plugin_activate' );
 add_action( 'admin_notices', 'zaprite_admin_notices' );
@@ -195,7 +193,7 @@ function zaprite_server_init() {
 			$amount   = $order->get_total();
 			$currency = $order->get_currency();
 			error_log( "ZAPRITE: Amount - $amount Currency: $currency" );
-			$total_in_smallest_unit = Utils::convert_to_smallest_unit( $amount, $currency );
+			$total_in_smallest_unit = Utils::to_smallest_unit( $amount, $currency );
 			error_log( "ZAPRITE: currency in smallest unit $total_in_smallest_unit $currency" );
 
 			// Call the Zaprite public api to create the invoice
@@ -293,7 +291,7 @@ function zaprite_server_init() {
 						}
 						// convert to major units (woo requires major units)
 						$currency                    = $order->get_currency();
-						$paidPremiumAmountMajorUnits = Utils::convert_to_major_unit( $paidPremium, $currency );
+						$paidPremiumAmountMajorUnits = Utils::from_smallest_unit( $paidPremium, $currency );
 						error_log( "ZAPRITE: paidPremium major units $paidPremiumAmountMajorUnits" );
 						$item_fee = new WC_Order_Item_Fee();
 						$item_fee->set_name( 'Fiat Premium Fee' );
