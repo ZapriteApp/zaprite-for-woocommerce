@@ -1,5 +1,9 @@
 Zaprite Payment Gateway
 
+## [1.0.1] - 2024-03-11
+
+- Bug fix: 3 decimal currency support and conversion fix.
+
 ## [1.0.0] - 2024-01-29
 
 - Initial release: Zaprite Payment Gateway with Bitcoin, Lightning and card Checkout support.

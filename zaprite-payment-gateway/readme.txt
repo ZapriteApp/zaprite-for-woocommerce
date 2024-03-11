@@ -1,4 +1,4 @@
-=== Zaprite Payment Gateway ===
+=== Zaprite Payment Gateway - Accept Bitcoin and Fiat payments in WooCommerce ===
 Contributors: zaprite
 Tags: payment, gateway, woocommerce, bitcoin, lightning
 Requires at least: 6.4.0
