@@ -4,7 +4,7 @@
  * Plugin Name: Zaprite Payment Gateway
  * Plugin URI: https://github.com/ZapriteApp/zaprite-for-woocommerce
  * Description: Accept bitcoin (on-chain and lightning) and fiat payments in one unified Zaprite Checkout.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: zaprite
  * Author URI: https://zaprite.com
  * Text Domain: zaprite-payment-gateway
@@ -15,6 +15,13 @@ add_action( 'plugins_loaded', 'zaprite_server_init' );
 
 define( 'ZAPRITE_APP_URL', getenv( 'ZAPRITE_APP_URL' ) ? getenv( 'ZAPRITE_APP_URL' ) : 'https://app.zaprite.com' );
 define( 'ZAPRITE_API_URL', getenv( 'ZAPRITE_API_URL' ) ? getenv( 'ZAPRITE_APP_URL' ) : ZAPRITE_APP_URL );
+define(
+	'ZAPRITE_PAY_URL',
+	ZAPRITE_APP_URL === 'https://app.zaprite.com'
+		? 'https://pay.zaprite.com'
+		: ZAPRITE_APP_URL . '/_domains/pay'
+);
+
 
 define( 'ZAPRITE_WOOCOMMERCE_VERSION', '1.0.0' );
 
@@ -62,7 +69,7 @@ function zaprite_server_init() {
 			$this->init_settings();
 
 			$this->title       = $this->get_option( 'title' );
-			$this->description = 'Powered by Zaprite'; // $this->get_option('description'); // hard code for now, disbled in form setting does not work as you would think, see https://chat.openai.com/share/308744d4-a771-41e0-879e-306c112ec0c4
+			$this->description = 'Powered by Zaprite'; // $this->get_option('description'); // hard code for now, disabled in form setting does not work as you would think, see https://chat.openai.com/share/308744d4-a771-41e0-879e-306c112ec0c4
 
 			$url     = $this->get_option( 'zaprite_server_url' );
 			$api_key = $this->get_option( 'zaprite_api_key' );
@@ -179,14 +186,14 @@ function zaprite_server_init() {
 		 * Call Zaprite API to create an invoice, and store the invoice in the order metadata.
 		 */
 		public function process_payment( $order_id ) {
-			$zaprite_url = ZAPRITE_APP_URL;
+			$zaprite_url     = ZAPRITE_APP_URL;
+			$zaprite_pay_url = ZAPRITE_PAY_URL;
 
-			error_log( 'ZAPRITE: process_payment' );
 			$order    = wc_get_order( $order_id );
 			$amount   = $order->get_total();
 			$currency = $order->get_currency();
-			// error_log(print_r($order, true));
-			$total_in_smallest_unit = Utils::convert_to_smallest_unit( $amount );
+			error_log( "ZAPRITE: Amount - $amount Currency: $currency" );
+			$total_in_smallest_unit = Utils::to_smallest_unit( $amount, $currency );
 			error_log( "ZAPRITE: currency in smallest unit $total_in_smallest_unit $currency" );
 
 			// Call the Zaprite public api to create the invoice
@@ -209,7 +216,7 @@ function zaprite_server_init() {
 				$checkout_page_id  = get_option( 'woocommerce_checkout_page_id' );
 				$checkout_page_url = get_permalink( $checkout_page_id );
 				$backUrl           = urlencode( $checkout_page_url );
-				$redirect_url      = "$zaprite_url/_domains/pay/order/$order_id?backUrl=$backUrl";
+				$redirect_url      = "$zaprite_pay_url/order/$order_id?backUrl=$backUrl";
 				return array(
 					'result'   => 'success',
 					'redirect' => $redirect_url,
@@ -283,7 +290,8 @@ function zaprite_server_init() {
 							return new WP_REST_Response( "Currencies do not match. Woo currency is $wooDefaultCurrency. Zaprite currency for premium paid is $paidPremiumCurrency", 400 );
 						}
 						// convert to major units (woo requires major units)
-						$paidPremiumAmountMajorUnits = Utils::convert_to_major_unit( $paidPremium );
+						$currency                    = $order->get_currency();
+						$paidPremiumAmountMajorUnits = Utils::from_smallest_unit( $paidPremium, $currency );
 						error_log( "ZAPRITE: paidPremium major units $paidPremiumAmountMajorUnits" );
 						$item_fee = new WC_Order_Item_Fee();
 						$item_fee->set_name( 'Fiat Premium Fee' );

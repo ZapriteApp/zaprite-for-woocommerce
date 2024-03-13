@@ -2,19 +2,24 @@
 namespace ZapritePlugin;
 
 class Utils {
-
-	public static function convert_to_smallest_unit( $amount ) {
-		// Get the number of decimals for pricing from WooCommerce settings
-		$decimals = get_option( 'woocommerce_price_num_decimals' );
-		// Convert the total to the smallest unit
-		return $amount * pow( 10, $decimals );
+	public static function get_currency_smallest_unit_factor( $currency ) {
+		// source: https://stripe.com/docs/currencies
+		if ( in_array( $currency, array( 'CLP', 'JPY', 'KRW', 'UGX', 'VND' ) ) ) {
+			return 1;
+		}
+		if ( in_array( $currency, array( 'BHD', 'JOD', 'KWD', 'OMR', 'TND' ) ) ) {
+			return 1000;
+		}
+		if ( in_array( $currency, array( 'BTC', 'LBTC' ) ) ) {
+			return 100_000_000;
+		}
+		return 100;
 	}
-	// Woo uses major units
-	public static function convert_to_major_unit( $amount ) {
-		// Get the number of decimals for pricing from WooCommerce settings
-		$decimals = get_option( 'woocommerce_price_num_decimals' );
-		// Convert the total from the smallest unit to the major unit
-		return $amount / pow( 10, $decimals );
+	public static function to_smallest_unit( $amount, $currency ) {
+		return round( $amount * self::get_currency_smallest_unit_factor( $currency ) );
+	}
+	public static function from_smallest_unit( $amount, $currency ) {
+		return $amount / self::get_currency_smallest_unit_factor( $currency );
 	}
 	// convert zaprite to woo status
 	public static function convert_zaprite_order_status_to_woo_status( $zapriteStatus ) {

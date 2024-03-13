@@ -1,5 +1,5 @@
 # Copyright (C) 2024 zaprite
-# This file is distributed under the same license as the Zaprite Payment Gateway plugin.
+# This file is distributed under the MIT.
 msgid ""
 msgstr ""
 "Project-Id-Version: Zaprite Payment Gateway 1.0.0\n"
@@ -9,108 +9,103 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-01-29T16:27:40+00:00\n"
+"POT-Creation-Date: 2024-03-11T15:47:41+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.9.0\n"
+"X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: zaprite-payment-gateway\n"
 
 #. Plugin Name of the plugin
+#: zaprite-payment-gateway.php
 msgid "Zaprite Payment Gateway"
 msgstr ""
 
 #. Plugin URI of the plugin
+#: zaprite-payment-gateway.php
 msgid "https://github.com/ZapriteApp/zaprite-for-woocommerce"
 msgstr ""
 
 #. Description of the plugin
+#: zaprite-payment-gateway.php
 msgid "Accept bitcoin (on-chain and lightning) and fiat payments in one unified Zaprite Checkout."
 msgstr ""
 
 #. Author of the plugin
+#: zaprite-payment-gateway.php
 msgid "zaprite"
 msgstr ""
 
 #. Author URI of the plugin
+#: zaprite-payment-gateway.php
 msgid "https://zaprite.com"
 msgstr ""
 
-#: zaprite-payment-gateway.php:58
+#: zaprite-payment-gateway.php:66
 msgid "Bitcoin payments made easy. Accept on-chain, lightning and fiat payments in one unified Zaprite Checkout experience."
 msgstr ""
 
-#: zaprite-payment-gateway.php:91
-#: zaprite-payment-gateway.php:134
+#: zaprite-payment-gateway.php:99
+#: zaprite-payment-gateway.php:141
 msgid "Zaprite"
 msgstr ""
 
-#: zaprite-payment-gateway.php:95
-msgid ""
-"\n"
-"                \n"
-"                    Accept bitcoin (on-chain and lightning) and fiat payments instantly through your\n"
-"                    hosted Zaprite Checkout. Enable the Woo connection on the Zaprite Connections page then paste the provided API Key into the field below.\n"
-"                \n"
-"                    <a href='https://blog.zaprite.com/how-to-connect-your-woocommerce-store/' target='_blank' rel='noreferrer'>\n"
-"                        Setup Guide\n"
-"                    </a>\n"
-"                \n"
-"                "
-msgstr ""
-
-#: zaprite-payment-gateway.php:124
-msgid "Enable Zaprite Payments"
-msgstr ""
-
-#: zaprite-payment-gateway.php:125
-msgid "Enable payments via Zaprite Checkout."
+#: zaprite-payment-gateway.php:104
+msgid "Accept bitcoin (on-chain and lightning) and fiat payments instantly through your hosted Zaprite Checkout. Enable the Woo connection on the Zaprite Connections page then paste the provided API Key into the field below. <a href='https://blog.zaprite.com/how-to-connect-your-woocommerce-store/' target='_blank' rel='noreferrer'>Setup Guide</a>"
 msgstr ""
 
 #: zaprite-payment-gateway.php:131
+msgid "Enable Zaprite Payments"
+msgstr ""
+
+#: zaprite-payment-gateway.php:132
+msgid "Enable payments via Zaprite Checkout."
+msgstr ""
+
+#: zaprite-payment-gateway.php:138
 msgid "Payment Method Name"
 msgstr ""
 
-#: zaprite-payment-gateway.php:133
+#: zaprite-payment-gateway.php:140
 msgid "The payment method title which a customer sees at the checkout of your store."
 msgstr ""
 
-#: zaprite-payment-gateway.php:137
+#: zaprite-payment-gateway.php:144
 msgid "Description"
 msgstr ""
 
-#: zaprite-payment-gateway.php:139
+#: zaprite-payment-gateway.php:146
 msgid "The payment method description which a customer sees at the checkout of your store."
 msgstr ""
 
-#: zaprite-payment-gateway.php:140
-#: zaprite-payment-gateway.php:141
+#: zaprite-payment-gateway.php:147
+#: zaprite-payment-gateway.php:148
 msgid "Powered by Zaprite"
 msgstr ""
 
-#: zaprite-payment-gateway.php:145
+#: zaprite-payment-gateway.php:152
 msgid "Show checkout Image"
 msgstr ""
 
-#: zaprite-payment-gateway.php:146
+#: zaprite-payment-gateway.php:153
 msgid "Show Zaprite image on checkout"
 msgstr ""
 
-#: zaprite-payment-gateway.php:149
+#: zaprite-payment-gateway.php:156
 msgid "yes"
 msgstr ""
 
-#: zaprite-payment-gateway.php:152
+#: zaprite-payment-gateway.php:159
 msgid "Zaprite API Key"
 msgstr ""
 
 #. translators: %s: URL to Woo store connection settings
-#: zaprite-payment-gateway.php:156
+#: zaprite-payment-gateway.php:163
 msgid "Enter the Zaprite API Key from your <a href='%s' target='_blank' rel='noopener noreferrer'>Woo store connection settings</a>."
 msgstr ""
 
-#: zaprite-payment-gateway.php:375
+#: zaprite-payment-gateway.php:383
 msgid "Settings"
 msgstr ""
 
-#: zaprite-payment-gateway.php:386
+#: zaprite-payment-gateway.php:394
 msgid "Setup Guide"
 msgstr ""

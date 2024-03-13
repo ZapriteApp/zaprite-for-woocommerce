@@ -63,17 +63,20 @@ you want then just create a symlink to the `plugin` directory:
 ln -s <path to the cloned repo>/zaprite-for-woocommerce/plugin <path to local wordpress>/wp-content/plugins/zaprite-payment-gateway
 ```
 
-Currenly there is no way to manage env variables if you use Locals by Flywheel,
-and there appears to be timing issues if you use the wp-config.php file. So to
-test locally edit `zaprite-payment-gateway.php`
+Next you need to set an environment variable to point to your local instance of Zaprite. You can set this at the web server level in Flywheel Locals.
+If your instance of Wordpress uses nginx you can "Go to site folder" then open `conf/nginx/site.conf.hbs`. Add this in the `location ~ \.php$` config:
 
-```php
-define('ZAPRITE_APP_URL', getenv('ZAPRITE_APP_URL') ? getenv('ZAPRITE_APP_URL') : 'http://localhost:3000' );
+```
+fastcgi_param ZAPRITE_APP_URL 'http://localhost:3000';
 ```
 
-Also make sure you turn on debugging: Edit the `wp-config.php` File. Look for
-the line that says `define('WP_DEBUG', false);`. If it's not there, you'll need
-to add it. And change it to true. Then restart your site. This should create a
+To turn on debugging, open the `wp-config.php`. Add
+
+```
+define('WP_DEBUG', true);
+```
+
+Lastly, restart your site. This should create a
 debug.log file in `wp-content`
 
 # Block Checkout
@@ -119,4 +122,6 @@ Dependencies
 
 1. Install php `brew install php`
 2. Install wordpress cli tools `brew install wp-cli` 
-3. `npm run build`
+3. `cd zaprite-payment-gateway`
+4. `npm run build`
+5. If you want to package a zip to upload to wordpress plugin manually run `npm run package`
