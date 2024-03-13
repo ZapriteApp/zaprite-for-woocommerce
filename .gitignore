@@ -64,3 +64,6 @@ select2.scss
 /languages/
 
 zaprite-payment-gateway.zip
+
+# SVN
+/svn/*
