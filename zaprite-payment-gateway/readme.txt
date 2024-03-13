@@ -44,6 +44,9 @@ This plugin integrates seamlessly with your WooCommerce Checkout, providing a fa
 
 == Upgrade Notice ==
 
+= 1.0.1 =
+This update adds additional decimal currency support.
+
 = 1.0.0 =
 Initial release. Please provide feedback and report any issues.
 
