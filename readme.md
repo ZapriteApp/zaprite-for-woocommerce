@@ -79,6 +79,24 @@ define('WP_DEBUG', true);
 Lastly, restart your site. This should create a
 debug.log file in `wp-content`
 
+### Tunnel
+The Zaprite app uses a service called qstash to callback to WooCommerce when an order status is changed. This is because some WooCommerce sites take over 15 seconds to respond (causing load and long timeouts for our server) . To test this locally you need to expose your local Woo site to the public internet so qstash can call back to it. One way to do this is to use Cloudflare tunnel + Flywheel Locals nginx config.
+
+1. Configure Cloudflare Tunnel
+   - Create an account https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/  
+   - You will install the Cloudflare tunnel locally on your machine. You can use brew to install if you are on mac.
+   - Next you will need to "Connect an application". Goto your cloud flare tunnel dashboard to configure. Set the service to http://localhost and choose a subdomain name (you will need to purchase a domain name from cloudflare if you don't already have one).
+   ![Cloudflare Image](./bin/cloudflare.png)
+
+2. Configure Flywheel Locals and nginx
+   - You will need to change the name of your flywheels site to match your cloudflare domain.
+   ![Flywheel Image](./bin/flywheel.png)
+   - Configure nginx to allow cors. Open "goto site folder" / conf / nginx / site.conf.hbs
+   - Add this line in server `add_header 'Access-Control-Allow-Origin' '*';`
+   - Restart your site 
+   - Now you should be able to access your Woo site on the public internet. http://woo.zapritedev.com
+
+
 # Block Checkout
 
 If you want to edit the UI for the Blocks checkout you need to compile the
