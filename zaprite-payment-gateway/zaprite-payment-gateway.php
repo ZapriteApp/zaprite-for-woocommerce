@@ -14,7 +14,7 @@
 add_action( 'plugins_loaded', 'zaprite_server_init' );
 
 define( 'ZAPRITE_APP_URL', getenv( 'ZAPRITE_APP_URL' ) ? getenv( 'ZAPRITE_APP_URL' ) : 'https://app.zaprite.com' );
-define( 'ZAPRITE_API_URL', getenv( 'ZAPRITE_API_URL' ) ? getenv( 'ZAPRITE_APP_URL' ) : ZAPRITE_APP_URL );
+define( 'ZAPRITE_API_URL', getenv( 'ZAPRITE_API_URL' ) ? getenv( 'ZAPRITE_API_URL' ) : ZAPRITE_APP_URL );
 define(
 	'ZAPRITE_PAY_URL',
 	ZAPRITE_APP_URL === 'https://app.zaprite.com'
