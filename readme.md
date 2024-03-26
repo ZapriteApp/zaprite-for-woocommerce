@@ -68,6 +68,7 @@ If your instance of Wordpress uses nginx you can "Go to site folder" then open `
 
 ```
 fastcgi_param ZAPRITE_APP_URL 'http://localhost:3000';
+fastcgi_param ZAPRITE_API_URL 'http://localhost:3000';
 ```
 
 To turn on debugging, open the `wp-config.php`. Add
