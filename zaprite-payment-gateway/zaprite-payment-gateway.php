@@ -251,13 +251,8 @@ function zaprite_server_init() {
 		 */
 		function zaprite_server_add_update_status_callback( $data ) {
 			error_log( 'ZAPRITE: webhook zaprite_server_add_update_status_callback' );
-			$order_id = $data['id'];
-			// TODO: remove apiKey in a future release in favor of Authorization header after Woo WordPress plugin is updated for all users
-			$api_key     = $data->get_header( 'apiKey' );
-			$auth_header = explode( ' ', $data->get_header( 'Authorization' ) );
-			if ( null == $api_key && 0 < count( $auth_header ) ) {
-				$api_key = $auth_header[1];  // Authorization: Bearer apiKey
-			}
+			$order_id       = $data['id'];
+			$api_key        = explode(' ', $_SERVER['HTTP_AUTHORIZATION'] ?? '')[1];
 			$api            = new API( $api_key );
 			$orderStatusRes = $api->checkCharge( $order_id );
 			if ( empty( $order_id ) || 200 !== $orderStatusRes['status'] || null == $api_key ) {
