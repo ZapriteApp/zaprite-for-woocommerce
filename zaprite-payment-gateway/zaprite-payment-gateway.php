@@ -14,7 +14,7 @@
 add_action( 'plugins_loaded', 'zaprite_server_init' );
 
 define( 'ZAPRITE_APP_URL', getenv( 'ZAPRITE_APP_URL' ) ? getenv( 'ZAPRITE_APP_URL' ) : 'https://app.zaprite.com' );
-define( 'ZAPRITE_API_URL', getenv( 'ZAPRITE_API_URL' ) ? getenv( 'ZAPRITE_APP_URL' ) : ZAPRITE_APP_URL );
+define( 'ZAPRITE_API_URL', getenv( 'ZAPRITE_API_URL' ) ? getenv( 'ZAPRITE_API_URL' ) : ZAPRITE_APP_URL );
 define(
 	'ZAPRITE_PAY_URL',
 	ZAPRITE_APP_URL === 'https://app.zaprite.com'
@@ -252,7 +252,7 @@ function zaprite_server_init() {
 		function zaprite_server_add_update_status_callback( $data ) {
 			error_log( 'ZAPRITE: webhook zaprite_server_add_update_status_callback' );
 			$order_id       = $data['id'];
-			$api_key        = $data->get_header( 'apiKey' );
+			$api_key        = explode( ' ', $_SERVER['HTTP_AUTHORIZATION'] ?? '' )[1];
 			$api            = new API( $api_key );
 			$orderStatusRes = $api->checkCharge( $order_id );
 			if ( empty( $order_id ) || 200 !== $orderStatusRes['status'] || null == $api_key ) {
