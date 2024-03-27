@@ -47,6 +47,9 @@ This plugin integrates seamlessly with your WooCommerce Checkout, providing a fa
 
 == Upgrade Notice ==
 
+= 1.0.2 =
+This updates add support for standard Authorization headers.
+
 = 1.0.1 =
 This update adds additional decimal currency support.
 
