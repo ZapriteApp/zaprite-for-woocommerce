@@ -313,6 +313,21 @@ function zaprite_server_init() {
 						}
 						$order->add_order_note( 'Payment is settled.' );
 						$order->payment_complete();
+						$transactions = $orderStatusRes['response']['transactions'];
+						$index        = 1;
+						foreach ( $transactions as $transaction ) {
+							$txnCurrency         = $transaction['currency'];
+							$txnAmountMajorUnits = Utils::from_smallest_unit( $transaction['amount'], $txnCurrency );
+							if ( $txnCurrency == 'BTC' ) {
+								// Format display as 0.00000001 instead of 1E-7
+								$txnAmountMajorUnits = sprintf( '%.8f', $txnAmountMajorUnits );
+							}
+							$order->add_meta_data( 'zaprite_txn_id_' . $index, $transaction['id'], false );
+							$order->add_meta_data( 'zaprite_txn_amount_' . $index, $txnAmountMajorUnits, false );
+							$order->add_meta_data( 'zaprite_txn_currency_' . $index, $txnCurrency, false );
+							$order->add_meta_data( 'zaprite_txn_plugin_' . $index, $transaction['pluginSlug'], false );
+							++$index;
+						}
 						$order->save();
 					}
 					error_log( 'PAID' );
