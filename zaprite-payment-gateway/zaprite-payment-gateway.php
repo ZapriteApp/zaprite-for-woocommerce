@@ -4,7 +4,7 @@
  * Plugin Name: Zaprite Payment Gateway
  * Plugin URI: https://github.com/ZapriteApp/zaprite-for-woocommerce
  * Description: Accept bitcoin (on-chain and lightning) and fiat payments in one unified Zaprite Checkout.
- * Version: 1.0.3
+ * Version: 1.0.4
  * Author: zaprite
  * Author URI: https://zaprite.com
  * Text Domain: zaprite-payment-gateway
@@ -326,6 +326,7 @@ function zaprite_server_init() {
 							$order->add_meta_data( 'zaprite_txn' . $index . '_amount', $txnAmountMajorUnits, false );
 							$order->add_meta_data( 'zaprite_txn' . $index . '_currency', $txnCurrency, false );
 							$order->add_meta_data( 'zaprite_txn' . $index . '_plugin', $transaction['pluginSlug'], false );
+							$order->add_meta_data( 'zaprite_txn' . $index . '_method', $transaction['method'], false );
 							++$index;
 						}
 						$order->save();
