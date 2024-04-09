@@ -326,6 +326,7 @@ function zaprite_server_init() {
 							$order->add_meta_data( 'zaprite_txn' . $index . '_amount', $txnAmountMajorUnits, false );
 							$order->add_meta_data( 'zaprite_txn' . $index . '_currency', $txnCurrency, false );
 							$order->add_meta_data( 'zaprite_txn' . $index . '_plugin', $transaction['pluginSlug'], false );
+							$order->add_meta_data( 'zaprite_txn' . $index . '_method', $transaction['method'], false );
 							++$index;
 						}
 						$order->save();
