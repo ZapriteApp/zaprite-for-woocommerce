@@ -4,7 +4,7 @@ Tags: payment, gateway, woocommerce, bitcoin, lightning
 Requires at least: 6.4.0
 Tested up to: 6.4.3
 Requires PHP: 7.2
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: MIT
 License URI: https://mit-license.org/
 
@@ -36,6 +36,9 @@ This plugin integrates seamlessly with your WooCommerce Checkout, providing a fa
 
 == Changelog ==
 
+= 1.0.3 =
+* Update: Add payment info in the order metadata.
+
 = 1.0.2 =
 * Update: Use standard Authorization header.
 
@@ -46,6 +49,9 @@ This plugin integrates seamlessly with your WooCommerce Checkout, providing a fa
 * Initial release: Zaprite payment gateway with Bitcoin, Lightning and card Checkout support.
 
 == Upgrade Notice ==
+
+= 1.0.3 =
+This update adds payment info in the order metadata.
 
 = 1.0.2 =
 This updates add support for standard Authorization headers.
