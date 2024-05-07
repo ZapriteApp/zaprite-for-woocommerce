@@ -13,11 +13,16 @@ _In order to use this plugin you have to create an account on
 
 ## Installation
 
-1. Upload the zipped `zaprite-payment-gateway` folder to the
-   `/wp-content/plugins/` directory (or in Plugins > Add New > Upload).
-2. Activate the plugin through the 'Plugins' menu in WordPress.
-3. Go to WooCommerce > Settings > Payments.
-4. Click on 'Zaprite' to configure the payment gateway settings.
+1. Navigate to _Plugins > Add New Plugin_, then search for 'zaprite' in the
+   official WordPress directory.
+2. Click 'Install Now', then once installed, click to Activate the plugin.
+3. Navigate to _WooCommerce > Settings > Payments_.
+4. Enable the Zaprite plugin, then click on 'Manage' to configure the payment
+   gateway settings.
+
+## Installation Video
+
+https://youtu.be/ohepHnGE3Tk?si=LEV1z86-BQOgB3i6
 
 ## Local development
 
@@ -63,8 +68,10 @@ you want then just create a symlink to the `plugin` directory:
 ln -s <path to the cloned repo>/zaprite-for-woocommerce/plugin <path to local wordpress>/wp-content/plugins/zaprite-payment-gateway
 ```
 
-Next you need to set an environment variable to point to your local instance of Zaprite. You can set this at the web server level in Flywheel Locals.
-If your instance of Wordpress uses nginx you can "Go to site folder" then open `conf/nginx/site.conf.hbs`. Add this in the `location ~ \.php$` config:
+Next you need to set an environment variable to point to your local instance of
+Zaprite. You can set this at the web server level in Flywheel Locals. If your
+instance of WordPress uses nginx you can "Go to site folder" then open
+`conf/nginx/site.conf.hbs`. Add this in the `location ~ \.php$` config:
 
 ```
 fastcgi_param ZAPRITE_APP_URL 'http://localhost:3000';
@@ -77,26 +84,38 @@ To turn on debugging, open the `wp-config.php`. Add
 define('WP_DEBUG', true);
 ```
 
-Lastly, restart your site. This should create a
-debug.log file in `wp-content`
+Lastly, restart your site. This should create a debug.log file in `wp-content`
 
 ### Tunnel
-The Zaprite app uses a queue service called qstash to callback to WooCommerce when an order status is changed. This is because some WooCommerce sites take over 15 seconds to respond (causing load and long timeouts on our server) . To test this locally you need to expose your local Woo site to the public internet so qstash can call back to it. One way to do this is to use Cloudflare tunnel + Flywheel Locals nginx config.
+
+The Zaprite app uses a queue service called qstash to callback to WooCommerce
+when an order status is changed. This is because some WooCommerce sites take
+over 15 seconds to respond (causing load and long timeouts on our server) . To
+test this locally you need to expose your local Woo site to the public internet
+so qstash can call back to it. One way to do this is to use Cloudflare tunnel +
+Flywheel Locals nginx config.
 
 1. Configure Cloudflare Tunnel
-   - Create an account https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/  
-   - You will install the Cloudflare tunnel locally on your machine. You can use brew to install if you are on mac.
-   - Next you will need to "Connect an application". Goto your cloud flare tunnel dashboard to configure. Set the service to http://localhost and choose a subdomain name (you will need to purchase a domain name from cloudflare if you don't already have one).
-   ![Cloudflare Image](./bin/cloudflare.png)
+
+    - Create an account
+      https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/
+    - You will install the Cloudflare tunnel locally on your machine. You can
+      use brew to install if you are on mac.
+    - Next you will need to "Connect an application". Goto your cloud flare
+      tunnel dashboard to configure. Set the service to http://localhost and
+      choose a subdomain name (you will need to purchase a domain name from
+      cloudflare if you don't already have one).
+      ![Cloudflare Image](./bin/cloudflare.png)
 
 2. Configure Flywheel Locals and nginx
-   - You will need to change the name of your flywheels site to match your cloudflare domain.
-   ![Flywheel Image](./bin/flywheel.png)
-   - Configure nginx to allow cors. Open "goto site folder" / conf / nginx / site.conf.hbs
-   - Add this line in server `add_header 'Access-Control-Allow-Origin' '*';`
-   - Restart your site 
-   - Now you should be able to access your Woo site on the public internet. for example: http://woo.zapritedev.com
-
+    - You will need to change the name of your flywheels site to match your
+      cloudflare domain. ![Flywheel Image](./bin/flywheel.png)
+    - Configure nginx to allow cors. Open "goto site folder" / conf / nginx /
+      site.conf.hbs
+    - Add this line in server `add_header 'Access-Control-Allow-Origin' '*';`
+    - Restart your site
+    - Now you should be able to access your Woo site on the public internet. for
+      example: http://woo.zapritedev.com
 
 # Block Checkout
 
@@ -120,11 +139,12 @@ javascript code:
 Docs: https://github.com/woocommerce/woocommerce-gateway-dummy
 
 # Linting
-Install dependencies 
-- `brew install php-code-sniffer`
-- `brew install composer`
-- `phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs`
 
+Install dependencies
+
+-   `brew install php-code-sniffer`
+-   `brew install composer`
+-   `phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs`
 
 ```
 cd zaprite-payment-gateway && npm run lint
@@ -137,10 +157,12 @@ php ./vendor/bin/phpcbf --standard=WordPress --ignore=*.js ./plugin
 ```
 
 # Building
+
 Dependencies
 
 1. Install php `brew install php`
-2. Install wordpress cli tools `brew install wp-cli` 
+2. Install wordpress cli tools `brew install wp-cli`
 3. `cd zaprite-payment-gateway`
 4. `npm run build`
-5. If you want to package a zip to upload to wordpress plugin manually run `npm run package`
+5. If you want to package a zip to upload to wordpress plugin manually run
+   `npm run package`
