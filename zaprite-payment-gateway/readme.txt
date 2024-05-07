@@ -2,7 +2,7 @@
 Contributors: zaprite
 Tags: payment, gateway, woocommerce, bitcoin, lightning
 Requires at least: 6.4.0
-Tested up to: 6.4.3
+Tested up to: 6.5.2
 Requires PHP: 7.2
 Stable tag: 1.0.4
 License: MIT
@@ -29,10 +29,16 @@ This plugin integrates seamlessly with your WooCommerce Checkout, providing a fa
 
 == Installation ==
 
-1. Upload the `zaprite-payment-gateway` folder to the `/wp-content/plugins/` directory.
-2. Activate the plugin through the 'Plugins' menu in WordPress.
-3. Go to WooCommerce > Settings > Payments.
-4. Click on 'Zaprite' to configure the payment gateway settings.
+1. Navigate to _Plugins > Add New Plugin_, then search for 'zaprite' in the
+   official WordPress directory.
+2. Click 'Install Now', then once installed, click to Activate the plugin.
+3. Navigate to _WooCommerce > Settings > Payments_.
+4. Enable the Zaprite plugin, then click on 'Manage' to configure the payment
+   gateway settings.
+
+**Installation Video**
+
+https://youtu.be/ohepHnGE3Tk?si=LEV1z86-BQOgB3i6
 
 == Changelog ==
 
@@ -70,19 +76,19 @@ Initial release. Please provide feedback and report any issues.
 
 == Demo ==
 
-To see a live demo, please visit https://woo.zaprite.dev.
+To see a live demo, please visit [https://woo.zaprite.dev](https://woo.zaprite.dev).
 
 == Support ==
 
-For support and feature requests, please visit https://zaprite.zendesk.com/hc/en-ca.
+For support and feature requests, please visit [https://zaprite.zendesk.com/hc/en-ca](https://zaprite.zendesk.com/hc/en-ca).
 
 == Additional Notes ==
 
-Zaprite is not affiliated with or endorsed by WooCommerce, WordPress, or any cryptocurrency entities. This plugin is developed and maintained by independent developers.
+Zaprite is not affiliated with or endorsed by WooCommerce or WordPress. This plugin is developed and maintained by Zaprite.
 
 == Frequently Asked Questions ==
 
-See the blog for FAQ's https://blog.zaprite.com/how-to-connect-your-woocommerce-store/ 
+See our blog post for FAQ's [How To Connect Your WooCommerce Store/](https://blog.zaprite.com/how-to-connect-your-woocommerce-store/). 
 
 == Screenshots ==
 
