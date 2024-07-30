@@ -1,5 +1,9 @@
 Zaprite Payment Gateway
 
+## [1.0.5] - 2024-05-22
+
+- Update: Add discounts.
+
 ## [1.0.4] - 2024-04-09
 
 - Update: Add method to order metadata.

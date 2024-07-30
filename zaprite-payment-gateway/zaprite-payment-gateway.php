@@ -4,7 +4,7 @@
  * Plugin Name: Zaprite Payment Gateway
  * Plugin URI: https://github.com/ZapriteApp/zaprite-for-woocommerce
  * Description: Accept bitcoin (on-chain and lightning) and fiat payments in one unified Zaprite Checkout.
- * Version: 1.0.4
+ * Version: 1.0.5
  * Author: zaprite
  * Author URI: https://zaprite.com
  * Text Domain: zaprite-payment-gateway
@@ -23,7 +23,7 @@ define(
 );
 
 
-define( 'ZAPRITE_WOOCOMMERCE_VERSION', '1.0.0' );
+define( 'ZAPRITE_WOOCOMMERCE_VERSION', '1.0.5' );
 
 define( 'WC_PAYMENT_GATEWAY_ZAPRITE_FILE', __FILE__ );
 define( 'WC_PAYMENT_GATEWAY_ZAPRITE_URL', plugins_url( '', WC_PAYMENT_GATEWAY_ZAPRITE_FILE ) );
@@ -273,36 +273,38 @@ function zaprite_server_init() {
 
 			switch ( $wooStatus ) {
 				case 'processing':
-					// check if fiat premium was applied, if so, save to custom data in woo
-					$paidPremium         = $orderStatusRes['response']['paidPremium'];
-					$paidPremiumCurrency = $orderStatusRes['response']['currency'];
-					error_log( "ZAPRITE: paidPremium minor units $paidPremium $paidPremiumCurrency " );
-					if ( $paidPremium ) {
+					// check if premium or discount was applied, if so, save to custom data in woo
+					$appliedDiscount     = $orderStatusRes['response']['appliedDiscount'];
+					$appliedDiscountCurrency = $orderStatusRes['response']['currency'];
+					error_log( "ZAPRITE: appliedDiscount minor units $appliedDiscount $appliedDiscountCurrency " );
+					if ( $appliedDiscount ) {
 						// add fee to order
-
 						// Edge Case
 						// return error if the currencies do not match...this could be an edge case where the
 						// woo store owner changes his currency before this order's payment is settled.
 						// TODO: in the future we could convert the currencies and do the math but I do
 						// not know how to easily do that in PHP
 						$wooDefaultCurrency = get_woocommerce_currency();
-						if ( $wooDefaultCurrency !== $paidPremiumCurrency ) {
-							return new WP_REST_Response( "Currencies do not match. Woo currency is $wooDefaultCurrency. Zaprite currency for premium paid is $paidPremiumCurrency", 400 );
+						if ( $wooDefaultCurrency !== $appliedDiscountCurrency ) {
+							return new WP_REST_Response( "Currencies do not match. Woo currency is $wooDefaultCurrency. Zaprite currency for applied discount is $appliedDiscountCurrency", 400 );
 						}
 						// convert to major units (woo requires major units)
 						$currency                    = $order->get_currency();
-						$paidPremiumAmountMajorUnits = Utils::from_smallest_unit( $paidPremium, $currency );
-						error_log( "ZAPRITE: paidPremium major units $paidPremiumAmountMajorUnits" );
+						// Discounts are positive numbers and Premiums are negative in Zaprite
+						$appliedDiscountAmountMajorUnits = -(Utils::from_smallest_unit( $appliedDiscount, $currency ));
+						error_log( "ZAPRITE: appliedDiscount major units $appliedDiscountAmountMajorUnits" );
+						$isDiscount = $appliedDiscountAmountMajorUnits < 0;
 						$item_fee = new WC_Order_Item_Fee();
-						$item_fee->set_name( 'Fiat Premium Fee' );
-						$item_fee->set_amount( $paidPremiumAmountMajorUnits );
+						$item_fee->set_name( $isDiscount ? 'Discount' : 'Premium' );
+						$item_fee->set_amount( $appliedDiscountAmountMajorUnits );
 						$item_fee->set_tax_class( '' ); // or 'standard' if the fee is taxable
 						$item_fee->set_tax_status( 'none' ); // or 'taxable'
-						$item_fee->set_total( $paidPremiumAmountMajorUnits ); // The total amount of the fee
+						$item_fee->set_total( $appliedDiscountAmountMajorUnits );
 						$order->add_item( $item_fee );
 						// Calculate totals and save the order
 						$order->calculate_totals();
-						$order->add_meta_data( 'zaprite_fiat_premium_extra_paid_amount', $paidPremiumAmountMajorUnits, true );
+						$meta_data_label = $isDiscount ? 'zaprite_discount_amount' : 'zaprite_premium_amount';
+						$order->add_meta_data( $meta_data_label, $appliedDiscountAmountMajorUnits, true );
 						$order->save();
 					}
 					if ( ! $order->has_status( 'completed' ) ) {

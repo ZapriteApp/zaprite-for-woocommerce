@@ -42,7 +42,10 @@ class API {
 			'externalOrderId'     => "$order_id",
 			'externalUniqId'      => $key,
 		);
-		$response            = $c->post( "$this->api_url/api/public/woo/create-order", array(), json_encode( $data ), $headers );
+		$query_params = array(
+			'wooPluginVersion'    => ZAPRITE_WOOCOMMERCE_VERSION,
+		);
+		$response            = $c->post( "$this->api_url/api/public/woo/create-order", $query_params, json_encode( $data ), $headers );
 		error_log( 'Send invoice status ===>' . $response['status'] );
 		return $response;
 	}
@@ -60,8 +63,11 @@ class API {
 			'apiKey'  => $this->api_key,
 			'orderId' => "$zapriteOrderId",
 		);
+		$query_params = array(
+			'wooPluginVersion'    => ZAPRITE_WOOCOMMERCE_VERSION,
+		);
 		$apiKey   = $this->api_key;
-		$response = $c->post( "$this->api_url/api/public/woo/check-order", array(), json_encode( $data ), $headers );
+		$response = $c->post( "$this->api_url/api/public/woo/check-order", $query_params, json_encode( $data ), $headers );
 		error_log( 'Check order status ===>' . $response['status'] );
 		return $response;
 	}
