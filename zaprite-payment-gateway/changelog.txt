@@ -1,5 +1,9 @@
 Zaprite Payment Gateway
 
+## [1.0.6] - 2025-08-29
+
+- Update: Bump versions and add pricing link.
+
 ## [1.0.5] - 2024-05-22
 
 - Update: Add discounts.
