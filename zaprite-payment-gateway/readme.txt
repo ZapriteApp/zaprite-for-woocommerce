@@ -4,7 +4,7 @@ Tags: payment, gateway, woocommerce, bitcoin, lightning
 Requires at least: 6.4.0
 Tested up to: 6.8.2
 Requires PHP: 7.2
-Stable tag: 1.0.6
+Stable tag: 1.0.7
 License: MIT
 License URI: https://mit-license.org/
 
@@ -42,6 +42,9 @@ https://youtu.be/ohepHnGE3Tk?si=LEV1z86-BQOgB3i6
 
 == Changelog ==
 
+= 1.0.7 =
+* Update: Fix order number.
+
 = 1.0.6 =
 * Update: Bump versions and add pricing link.
 
@@ -64,6 +67,9 @@ https://youtu.be/ohepHnGE3Tk?si=LEV1z86-BQOgB3i6
 * Initial release: Zaprite payment gateway with Bitcoin, Lightning and card Checkout support.
 
 == Upgrade Notice ==
+
+= 1.0.7 =
+* Update: Fix order number.
 
 = 1.0.6 =
 Tested for latest version.
