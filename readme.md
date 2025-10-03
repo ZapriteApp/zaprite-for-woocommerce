@@ -166,3 +166,6 @@ Dependencies
 4. `npm run build`
 5. If you want to package a zip to upload to wordpress plugin manually run
    `npm run package`
+
+# Updates and Changelog
+If you update the code and add a new feature make sure to increment the version number and add a changelog entry, see: https://github.com/ZapriteApp/zaprite-for-woocommerce/pull/37/files

@@ -19,9 +19,10 @@ class API {
 
 		error_log( "ZAPRITE: URL $this->api_url" );
 
-		$c     = new CurlWrapper();
-		$order = wc_get_order( $order_id );
-		error_log( "ZAPRITE: amount in smallest unit $amount $currency" );
+		$c            = new CurlWrapper();
+		$order        = wc_get_order( $order_id );
+		$order_number = $order->get_order_number(); // Get sequential order number if plugin is active
+		error_log( "ZAPRITE: amount in smallest unit $amount $currency Order Number: $order_number" );
 		$headers = array(
 			'Content-Type' => 'application/json',
 		);
@@ -39,11 +40,11 @@ class API {
 			'currency'            => $currency,
 			'orderUpdateCallback' => $orderUpdateCallback,
 			'redirectUrl'         => $completelink,
-			'externalOrderId'     => "$order_id",
+			'externalOrderId'     => "$order_number",
 			'externalUniqId'      => $key,
 		);
-		$query_params = array(
-			'wooPluginVersion'    => ZAPRITE_WOOCOMMERCE_VERSION,
+		$query_params        = array(
+			'wooPluginVersion' => ZAPRITE_WOOCOMMERCE_VERSION,
 		);
 		$response            = $c->post( "$this->api_url/api/public/woo/create-order", $query_params, json_encode( $data ), $headers );
 		error_log( 'Send invoice status ===>' . $response['status'] );
@@ -59,15 +60,15 @@ class API {
 		);
 		$zapriteOrderId = $order->get_meta( 'zaprite_order_id', $order_id, true );
 		error_log( "ZAPRITE: checkCharge zapriteOrderId = $zapriteOrderId" );
-		$data     = array(
+		$data         = array(
 			'apiKey'  => $this->api_key,
 			'orderId' => "$zapriteOrderId",
 		);
 		$query_params = array(
-			'wooPluginVersion'    => ZAPRITE_WOOCOMMERCE_VERSION,
+			'wooPluginVersion' => ZAPRITE_WOOCOMMERCE_VERSION,
 		);
-		$apiKey   = $this->api_key;
-		$response = $c->post( "$this->api_url/api/public/woo/check-order", $query_params, json_encode( $data ), $headers );
+		$apiKey       = $this->api_key;
+		$response     = $c->post( "$this->api_url/api/public/woo/check-order", $query_params, json_encode( $data ), $headers );
 		error_log( 'Check order status ===>' . $response['status'] );
 		return $response;
 	}
