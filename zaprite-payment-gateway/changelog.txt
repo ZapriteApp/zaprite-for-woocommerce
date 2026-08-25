@@ -1,5 +1,9 @@
 Zaprite Payment Gateway
 
+## [1.0.8] - 2026-08-24
+
+- Bug Fix: Bump tested versions.
+
 ## [1.0.7] - 2025-10-01
 
 - Bug Fix: Fix Order number.
