@@ -29,11 +29,14 @@ class API {
 
 		$completelink = $order->get_checkout_order_received_url();
 		$key          = $order->get_order_key();
-		$site_url     = site_url();
 
 		error_log( "Zapite: Complete Link $completelink" );
 
-		$orderUpdateCallback = "$site_url/wp-json/zaprite_server/zaprite/v1/update_status/$order_id/?key=$key";
+		$orderUpdateCallback = add_query_arg(
+			'key',
+			$key,
+			rest_url( "zaprite_server/zaprite/v1/update_status/$order_id/" )
+		);
 		$data                = array(
 			'apiKey'              => $this->api_key,
 			'amount'              => $amount,
