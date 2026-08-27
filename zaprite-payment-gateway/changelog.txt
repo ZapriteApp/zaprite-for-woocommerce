@@ -1,5 +1,9 @@
 Zaprite Payment Gateway
 
+## [1.0.9] - 2026-08-27
+
+- Bug Fix: Support WordPress REST callbacks with all permalink settings.
+
 ## [1.0.8] - 2026-08-24
 
 - Bug Fix: Bump tested versions.
